@@ -1,10 +1,13 @@
-import { Button } from "@/components/ui/button"
+import { CardLink } from "./pages/card-link"
+import { ItemLink } from "./pages/item-link"
 
 function App() {
   return (
-    <div>
+    <div className="min-h-screen bg-background text-foreground">
       <div>Subchecker Web-App</div>
-      <Button>Button</Button>
+      <CardLink />
+      <div>Subchecker Links</div>
+      <ItemLink />
     </div>
   )
 }
