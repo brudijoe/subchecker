@@ -23,7 +23,7 @@ export function CardLink() {
             <CardContent>
                 <form>
                     <div className="grid gap-2">
-                        <Label htmlFor="link">Email</Label>
+                        <Label htmlFor="link">Link</Label>
                         <Input
                             id="link"
                             type="link"
