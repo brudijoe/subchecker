@@ -1,6 +1,7 @@
 import { CardLink } from "./pages/card-link"
 import { ItemLink } from "./pages/item-link"
 import { useState } from "react"
+import { TableLink } from "./pages/table-link";
 
 function App() {
   // TODO: Müsste später ein array sein und dann mappen
@@ -13,6 +14,7 @@ function App() {
       <CardLink />
       <div>Subchecker Links</div>
       <ItemLink link={youtubeLink} />
+      <TableLink />
     </div>
   )
 }

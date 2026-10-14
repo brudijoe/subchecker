@@ -9,6 +9,7 @@ import {
 import { Spinner } from "@/components/ui/spinner"
 import { useQuery } from "@tanstack/react-query"
 import { Badge } from "@/components/ui/badge"
+import { CircleCheck, CircleX } from "lucide-react"
 
 type Link = {
     title: string,
@@ -83,8 +84,7 @@ export function ItemLink({ link }: { link: string }) {
                     <ItemDescription>
                         {isFetching ?
                             <Spinner /> :
-                            data.hasSubs ? "English subtitles available" : "No genuine English subtitles available"
-                        }
+                            data.hasSubs ? <CircleCheck className="size-5" /> : <CircleX className="size-5" />}
                     </ItemDescription>
                 </ItemContent>
                 <ItemActions>
