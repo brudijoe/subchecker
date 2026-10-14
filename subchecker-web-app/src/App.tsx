@@ -1,16 +1,24 @@
 import { CardLink } from "./pages/card-link"
-import { useState } from "react"
 import { TableLink } from "./pages/table-link";
 
 function App() {
   // TODO store in local storage with tanstack plugin
-  const [links, setLinks] = useState(["https://www.youtube.com/watch?v=wfaL-baiNUo", "https://www.youtube.com/watch?v=UXhV9FxxGbg"]);
+  const links = ["https://www.youtube.com/watch?v=wfaL-baiNUo", "https://www.youtube.com/watch?v=UXhV9FxxGbg"];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <div>Subchecker Web-App</div>
-      <TableLink links={links} />
-      <CardLink />
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-8 sm:px-6 sm:py-12">
+        <header className="space-y-2">
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Subchecker</h1>
+          <p className="text-sm text-muted-foreground sm:text-base">
+            Keep track of your YouTube links at a glance.
+          </p>
+        </header>
+        <section aria-label="Your YouTube links">
+          <TableLink links={links} />
+        </section>
+        <CardLink />
+      </main>
     </div>
   )
 }
