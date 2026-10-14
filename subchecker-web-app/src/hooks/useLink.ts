@@ -1,17 +1,6 @@
-import { Button } from "@/components/ui/button"
-import {
-    Item,
-    ItemActions,
-    ItemContent,
-    ItemDescription,
-    ItemTitle,
-} from "@/components/ui/item"
-import { Spinner } from "@/components/ui/spinner"
 import { useQuery } from "@tanstack/react-query"
-import { Badge } from "@/components/ui/badge"
-import { CircleCheck, CircleX } from "lucide-react"
 
-type Link = {
+export type Link = {
     title: string,
     hasSubs: boolean,
 }
@@ -63,36 +52,9 @@ async function hasEnglishSubtitles(link: string): Promise<Link> {
     };
 }
 
-function useLink(link: string) {
+export function useLink(link: string) {
     return useQuery({
         queryKey: ["link", link],
         queryFn: () => hasEnglishSubtitles(link),
     });
-}
-
-export function ItemLink({ link }: { link: string }) {
-    const { data, isPending, isError, isFetching, refetch } = useLink(link);
-
-    if (isPending) return <Spinner />;
-    if (isError) return <Badge variant="destructive">Error</Badge>;
-
-    return (
-        <div className="flex w-full max-w-md flex-col gap-6">
-            <Item variant="outline">
-                <ItemContent>
-                    <ItemTitle>{data.title}</ItemTitle>
-                    <ItemDescription>
-                        {isFetching ?
-                            <Spinner /> :
-                            data.hasSubs ? <CircleCheck className="size-5" /> : <CircleX className="size-5" />}
-                    </ItemDescription>
-                </ItemContent>
-                <ItemActions>
-                    <Button variant="outline" size="sm" onClick={() => refetch()}>
-                        Check link
-                    </Button>
-                </ItemActions>
-            </Item>
-        </div>
-    );
 }
