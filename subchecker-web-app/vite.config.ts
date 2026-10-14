@@ -11,4 +11,13 @@ export default defineConfig({
       "@": path.resolve(import.meta.dirname, "./src"),
     },
   },
+  server: {
+    proxy: {
+      "/yt": {
+        target: "https://www.youtube.com",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/yt/, ""),
+      },
+    },
+  },
 })
