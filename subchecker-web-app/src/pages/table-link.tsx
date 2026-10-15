@@ -10,11 +10,24 @@ import {
 } from "@/components/ui/table";
 import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
-import { CircleCheck, CircleX } from "lucide-react";
+import { Check, CircleCheck, CircleX, Copy } from "lucide-react";
 import { useLink } from "@/hooks/useLink";
+import { useState } from "react";
 
 function TableLinkRow({ link }: { link: string }) {
     const { data, isPending, isError, isFetching, refetch } = useLink(link);
+
+    const [copied, setCopied] = useState(false);
+
+    async function handleCopy() {
+        try {
+            await navigator.clipboard.writeText(link);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (error) {
+            console.error("Copy failed", error);
+        }
+    }
 
     return (
         <TableRow>
@@ -29,9 +42,31 @@ function TableLinkRow({ link }: { link: string }) {
                     <CircleX className="size-5" />
                 )}
             </TableCell>
-            <TableCell>{data?.title || link}</TableCell>
-            <TableCell className="text-right">
-                <Button variant="outline" size="sm" onClick={() => refetch()}>
+            <TableCell className="whitespace-normal [overflow-wrap:anywhere]">
+                {data?.title}
+            </TableCell>
+            <TableCell className="w-[80px] text-center">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Copy link"
+                    title="Copy link"
+                    onClick={handleCopy}
+                >
+                    {copied ? (
+                        <Check className="size-4" />
+                    ) : (
+                        <Copy className="size-4" />
+                    )}
+                </Button>
+            </TableCell>
+            <TableCell className="w-[120px] text-right">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={isFetching}
+                    onClick={() => refetch()}
+                >
                     Check link
                 </Button>
             </TableCell>
@@ -47,6 +82,7 @@ export function TableLink({ links }: { links: string[] }) {
                 <TableRow>
                     <TableHead className="w-[100px]">Status</TableHead>
                     <TableHead>Title</TableHead>
+                    <TableHead className="w-[80px] text-center">Copy</TableHead>
                     <TableHead className="text-right">Refresh</TableHead>
                 </TableRow>
             </TableHeader>
