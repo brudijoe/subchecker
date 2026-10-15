@@ -1,9 +1,5 @@
+import type { Link } from "@/types/types";
 import { useQuery } from "@tanstack/react-query"
-
-export type Link = {
-    title: string,
-    hasSubs: boolean,
-}
 
 async function hasEnglishSubtitles(link: string): Promise<Link> {
     const url = new URL(link);

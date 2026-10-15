@@ -1,9 +1,10 @@
+import { useSelector } from "@tanstack/react-store";
 import { CardLink } from "./pages/card-link"
 import { TableLink } from "./pages/table-link";
+import { linkStore } from "./stores/LinkStore";
 
 function App() {
-  // TODO store in local storage with tanstack plugin
-  const links = ["https://www.youtube.com/watch?v=wfaL-baiNUo", "https://www.youtube.com/watch?v=UXhV9FxxGbg"];
+  const links = useSelector(linkStore, (state) => state.links);
 
   return (
     <div className="min-h-screen bg-background text-foreground">

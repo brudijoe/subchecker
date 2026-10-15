@@ -12,8 +12,22 @@ import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ArrowRight, Link2, Play } from "lucide-react"
+import { addLink } from "@/stores/LinkStore"
+import { useState } from "react"
 
 export function CardLink() {
+    const [link, setLink] = useState("");
+
+    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setLink(event.target.value);
+    };
+
+    const handleClick = () => {
+        addLink(link)
+        setLink("");
+    };
+
+
     return (
         <Card className="w-full max-w-xl border-border/70 shadow-xl shadow-black/10 ring-white/5">
             <CardHeader className="flex-row items-center justify-between gap-4 pb-4">
@@ -49,6 +63,8 @@ export function CardLink() {
                                 className="h-11 bg-background/60 pl-10"
                                 placeholder="https://www.youtube.com/watch?v=..."
                                 required
+                                value={link}
+                                onChange={handleChange}
                             />
                         </div>
                         <p className="text-xs text-muted-foreground">
@@ -58,7 +74,7 @@ export function CardLink() {
                 </form>
             </CardContent>
             <CardFooter className="border-border/70 bg-muted/20 p-5">
-                <Button type="submit" size="lg" className="w-full gap-2 font-semibold">
+                <Button type="submit" size="lg" className="w-full gap-2 font-semibold" onClick={handleClick}>
                     Check link
                     <ArrowRight className="size-4" aria-hidden="true" />
                 </Button>
