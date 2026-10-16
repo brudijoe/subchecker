@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import {
     Table,
     TableBody,
-    TableCaption,
     TableCell,
     TableHead,
     TableHeader,
@@ -10,9 +9,43 @@ import {
 } from "@/components/ui/table";
 import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
-import { Check, CircleCheck, CircleX, Copy } from "lucide-react";
+import { Check, CircleCheck, CircleX, Copy, Trash } from "lucide-react";
 import { useLink } from "@/hooks/useLink";
 import { useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+function TableLinkSkeletonRow() {
+    return (
+        <TableRow>
+            {/* Status */}
+            <TableCell className="w-[80px] text-center">
+                <div className="flex items-center justify-center">
+                    <Skeleton className="size-5 rounded-full" />
+                </div>
+            </TableCell>
+
+            {/* Title */}
+            <TableCell className="whitespace-normal [overflow-wrap:anywhere]">
+                <Skeleton className="h-4 w-3/4" />
+            </TableCell>
+
+            {/* Copy */}
+            <TableCell className="w-[80px] text-center">
+                <Skeleton className="mx-auto size-8 rounded-md" />
+            </TableCell>
+
+            {/* Delete */}
+            <TableCell className="w-[80px] text-center">
+                <Skeleton className="mx-auto size-8 rounded-md" />
+            </TableCell>
+
+            {/* Refresh */}
+            <TableCell className="w-[120px] text-center">
+                <Skeleton className="mx-auto h-8 w-24 rounded-md" />
+            </TableCell>
+        </TableRow>
+    );
+}
 
 function TableLinkRow({ link }: { link: string }) {
     const { data, isPending, isError, isFetching, refetch } = useLink(link);
@@ -30,60 +63,79 @@ function TableLinkRow({ link }: { link: string }) {
     }
 
     return (
-        <TableRow>
-            <TableCell>
-                {isPending || isFetching ? (
-                    <Spinner />
-                ) : isError ? (
-                    <Badge variant="destructive">Error</Badge>
-                ) : data.hasSubs ? (
-                    <CircleCheck className="size-5" />
-                ) : (
-                    <CircleX className="size-5" />
-                )}
-            </TableCell>
-            <TableCell className="whitespace-normal [overflow-wrap:anywhere]">
-                {data?.title}
-            </TableCell>
-            <TableCell className="w-[80px] text-center">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label="Copy link"
-                    title="Copy link"
-                    onClick={handleCopy}
-                >
-                    {copied ? (
-                        <Check className="size-4" />
-                    ) : (
-                        <Copy className="size-4" />
-                    )}
-                </Button>
-            </TableCell>
-            <TableCell className="w-[120px] text-right">
-                <Button
-                    variant="outline"
-                    size="sm"
-                    disabled={isFetching}
-                    onClick={() => refetch()}
-                >
-                    Check link
-                </Button>
-            </TableCell>
-        </TableRow>
+        <>
+            {isPending ? (
+                <TableLinkSkeletonRow />
+            ) :
+                <TableRow>
+                    <TableCell className="w-[80px]">
+                        <div className="flex items-center justify-center">
+                            {isFetching ? (
+                                <Spinner className="size-5" />
+                            ) : isError ? (
+                                <Badge variant="destructive">Error</Badge>
+                            ) : data.hasSubs ? (
+                                <CircleCheck className="size-5" />
+                            ) : (
+                                <CircleX className="size-5" />
+                            )}
+                        </div>
+                    </TableCell>
+                    <TableCell className="whitespace-normal [overflow-wrap:anywhere]">
+                        {data?.title}
+                    </TableCell>
+                    <TableCell className="w-[80px] text-center">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            aria-label="Copy link"
+                            title="Copy link"
+                            onClick={handleCopy}
+                        >
+                            {copied ? (
+                                <Check className="size-5" />
+                            ) : (
+                                <Copy className="size-5" />
+                            )}
+                        </Button>
+                    </TableCell>
+                    <TableCell className="w-[80px] text-center">
+                        <Button
+                            variant="ghost"
+                            size="icon"
+                            aria-label="Copy link"
+                            title="Copy link"
+                            onClick={handleCopy}
+                        >
+                            <Trash className="size-5" />
+                        </Button>
+                    </TableCell>
+                    <TableCell className="w-[120px] text-center">
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            disabled={isFetching}
+                            onClick={() => refetch()}
+                        >
+                            Check link
+                        </Button>
+                    </TableCell>
+                </TableRow>
+            }
+        </>
     );
 }
 
 export function TableLink({ links }: { links: string[] }) {
     return (
         <Table>
-            <TableCaption>A list of your YouTube links.</TableCaption>
             <TableHeader>
                 <TableRow>
-                    <TableHead className="w-[100px]">Status</TableHead>
+                    <TableHead className="w-[80px] text-center">Status</TableHead>
                     <TableHead>Title</TableHead>
-                    <TableHead className="w-[80px] text-center">Copy</TableHead>
-                    <TableHead className="text-right">Refresh</TableHead>
+                    <TableHead className="text-center">Copy</TableHead>
+                    <TableHead className="text-center">Delete</TableHead>
+                    <TableHead className="text-center">Refresh</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
