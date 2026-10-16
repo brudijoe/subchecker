@@ -1,5 +1,4 @@
 import { useSelector } from "@tanstack/react-store";
-import { CardLink } from "./pages/card-link"
 import { TableLink } from "./pages/table-link";
 import { linkStore } from "./stores/LinkStore";
 import { Play } from "lucide-react";
@@ -23,7 +22,7 @@ function App() {
             </div>
           </div>
           <p className="text-sm text-muted-foreground sm:text-base">
-            Keep track of your YouTube links at a glance.
+            Keep track of your YouTube links and see if English subtitles are available.
           </p>
         </header>
         <TableLink links={links} />

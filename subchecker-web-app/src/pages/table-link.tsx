@@ -18,7 +18,7 @@ import { removeLink } from "@/stores/LinkStore";
 function TableLinkSkeletonRow() {
     return (
         <TableRow>
-            {/* Status */}
+            {/* Subtitles */}
             <TableCell className="w-[80px] text-center">
                 <div className="flex items-center justify-center">
                     <Skeleton className="size-4 rounded-full" />
@@ -141,7 +141,7 @@ export function TableLink({ links }: { links: string[] }) {
         <Table>
             <TableHeader>
                 <TableRow>
-                    <TableHead className="w-[80px] text-center">Status</TableHead>
+                    <TableHead className="w-[80px] text-center">Subtitles</TableHead>
                     <TableHead>Title</TableHead>
                     <TableHead className="text-center">Copy</TableHead>
                     <TableHead className="text-center">Delete</TableHead>
