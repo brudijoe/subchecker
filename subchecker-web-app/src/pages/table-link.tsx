@@ -13,6 +13,7 @@ import { Check, CircleCheck, CircleX, Copy, Trash } from "lucide-react";
 import { useLink } from "@/hooks/useLink";
 import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { removeLink } from "@/stores/LinkStore";
 
 function TableLinkSkeletonRow() {
     return (
@@ -47,7 +48,12 @@ function TableLinkSkeletonRow() {
     );
 }
 
-function TableLinkRow({ link }: { link: string }) {
+type LinkProps = {
+    link: string;
+    index: number;
+}
+
+function TableLinkRow({ link, index }: LinkProps) {
     const { data, isPending, isError, isFetching, refetch } = useLink(link);
 
     const [copied, setCopied] = useState(false);
@@ -60,6 +66,10 @@ function TableLinkRow({ link }: { link: string }) {
         } catch (error) {
             console.error("Copy failed", error);
         }
+    }
+
+    const handleDeleteLink = (index: number) => {
+        removeLink(index);
     }
 
     return (
@@ -105,7 +115,7 @@ function TableLinkRow({ link }: { link: string }) {
                             size="icon"
                             aria-label="Copy link"
                             title="Copy link"
-                            onClick={handleCopy}
+                            onClick={() => handleDeleteLink(index)}
                         >
                             <Trash className="size-5" />
                         </Button>
@@ -139,8 +149,8 @@ export function TableLink({ links }: { links: string[] }) {
                 </TableRow>
             </TableHeader>
             <TableBody>
-                {links.map((link) => (
-                    <TableLinkRow key={link} link={link} />
+                {links.map((link, index) => (
+                    <TableLinkRow key={link} index={index} link={link} />
                 ))}
             </TableBody>
         </Table>
