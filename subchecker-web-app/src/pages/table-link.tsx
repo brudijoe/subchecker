@@ -21,7 +21,7 @@ function TableLinkSkeletonRow() {
             {/* Status */}
             <TableCell className="w-[80px] text-center">
                 <div className="flex items-center justify-center">
-                    <Skeleton className="size-5 rounded-full" />
+                    <Skeleton className="size-4 rounded-full" />
                 </div>
             </TableCell>
 
@@ -81,13 +81,13 @@ function TableLinkRow({ link, index }: LinkProps) {
                     <TableCell className="w-[80px]">
                         <div className="flex items-center justify-center">
                             {isFetching ? (
-                                <Spinner className="size-5" />
+                                <Spinner className="size-4" />
                             ) : isError ? (
                                 <Badge variant="destructive">Error</Badge>
                             ) : data.hasSubs ? (
-                                <CircleCheck className="size-5" />
+                                <CircleCheck className="size-4" />
                             ) : (
-                                <CircleX className="size-5" />
+                                <CircleX className="size-4" />
                             )}
                         </div>
                     </TableCell>
@@ -103,9 +103,9 @@ function TableLinkRow({ link, index }: LinkProps) {
                             onClick={handleCopy}
                         >
                             {copied ? (
-                                <Check className="size-5" />
+                                <Check className="size-4" />
                             ) : (
-                                <Copy className="size-5" />
+                                <Copy className="size-4" />
                             )}
                         </Button>
                     </TableCell>
@@ -113,11 +113,11 @@ function TableLinkRow({ link, index }: LinkProps) {
                         <Button
                             variant="ghost"
                             size="icon"
-                            aria-label="Copy link"
-                            title="Copy link"
+                            aria-label="Delete link"
+                            title="Delete link"
                             onClick={() => handleDeleteLink(index)}
                         >
-                            <Trash className="size-5" />
+                            <Trash className="size-4" />
                         </Button>
                     </TableCell>
                     <TableCell className="w-[120px] text-center">
