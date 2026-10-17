@@ -43,7 +43,9 @@ async function hasEnglishSubtitles(link: string): Promise<Link> {
     return {
         title: videoTitle ?? "", hasSubs: captionTracks.some(
             (track: { languageCode: string; vssId?: string }) =>
-                track.languageCode === "en" && track.vssId && !track.vssId.startsWith("a.")
+                // Check if there are more variants
+                (track.languageCode === "en" || track.languageCode === "en-US")
+                && track.vssId && !track.vssId.startsWith("a.")
         )
     };
 }
