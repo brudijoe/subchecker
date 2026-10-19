@@ -29,11 +29,6 @@ function TableLinkSkeletonRow() {
                 <Skeleton className="h-4 w-3/4" />
             </TableCell>
 
-            {/* Copy */}
-            <TableCell className="w-[80px] text-center">
-                <Skeleton className="mx-auto size-8 rounded-md" />
-            </TableCell>
-
             {/* Delete */}
             <TableCell className="w-[80px] text-center">
                 <Skeleton className="mx-auto size-8 rounded-md" />
