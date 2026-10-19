@@ -9,9 +9,8 @@ import {
 } from "@/components/ui/table";
 import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
-import { Check, CircleCheck, CircleX, Copy, Trash } from "lucide-react";
+import { CircleCheck, CircleX, Trash } from "lucide-react";
 import { useLink } from "@/hooks/useLink";
-import { useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { removeLink } from "@/stores/LinkStore";
 
@@ -56,18 +55,6 @@ type LinkProps = {
 function TableLinkRow({ link, index }: LinkProps) {
     const { data, isPending, isError, isFetching, refetch } = useLink(link);
 
-    const [copied, setCopied] = useState(false);
-
-    async function handleCopy() {
-        try {
-            await navigator.clipboard.writeText(link);
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        } catch (error) {
-            console.error("Copy failed", error);
-        }
-    }
-
     const handleDeleteLink = (index: number) => {
         removeLink(index);
     }
@@ -92,22 +79,14 @@ function TableLinkRow({ link, index }: LinkProps) {
                         </div>
                     </TableCell>
                     <TableCell className="whitespace-normal [overflow-wrap:anywhere]">
-                        {data?.title}
-                    </TableCell>
-                    <TableCell className="w-[80px] text-center">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            aria-label="Copy link"
-                            title="Copy link"
-                            onClick={handleCopy}
+                        <a
+                            href={link}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="hover:underline"
                         >
-                            {copied ? (
-                                <Check className="size-4" />
-                            ) : (
-                                <Copy className="size-4" />
-                            )}
-                        </Button>
+                            {data?.title || link}
+                        </a>
                     </TableCell>
                     <TableCell className="w-[80px] text-center">
                         <Button
@@ -143,7 +122,6 @@ export function TableLink({ links }: { links: string[] }) {
                 <TableRow>
                     <TableHead className="w-[80px] text-center">Subtitles</TableHead>
                     <TableHead>Title</TableHead>
-                    <TableHead className="text-center">Copy</TableHead>
                     <TableHead className="text-center">Delete</TableHead>
                     <TableHead className="text-center">Refresh</TableHead>
                 </TableRow>
