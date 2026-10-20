@@ -54,5 +54,9 @@ export function useLink(link: string) {
     return useQuery({
         queryKey: ["link", link],
         queryFn: () => hasEnglishSubtitles(link),
+        refetchOnMount: false,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        staleTime: Infinity
     });
 }
