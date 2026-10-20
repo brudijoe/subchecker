@@ -1,4 +1,4 @@
-import { relations } from 'drizzle-orm';
+import { defineRelations } from 'drizzle-orm';
 import { pgTable, text, integer, timestamp } from 'drizzle-orm/pg-core';
 
 export const users = pgTable('users', {
@@ -16,13 +16,14 @@ export const links = pgTable('links', {
 });
 
 // Relationen für die Query-API
-export const usersRelations = relations(users, ({ many }) => ({
-    links: many(links),
-}));
-
-export const linksRelations = relations(links, ({ one }) => ({
-    user: one(users, {
-        fields: [links.userId],
-        references: [users.id],
-    }),
+export const relations = defineRelations({ users, links }, (r) => ({
+    users: {
+        links: r.many.links(),
+    },
+    links: {
+        user: r.one.users({
+            from: r.links.userId,
+            to: r.users.id,
+        }),
+    },
 }));
