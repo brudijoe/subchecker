@@ -1,15 +1,32 @@
-import { serve } from '@hono/node-server'
-import { Hono } from 'hono'
+import { Hono } from 'hono';
+import { db } from './db/index';
+import { users, links } from './db/schema';
 
-const app = new Hono()
+const app = new Hono();
 
-app.get('/', (c) => {
-  return c.text('Hello Hono!')
-})
+// User mit Links erstellen
+app.post('/users', async (c) => {
+  const { email, links: linkUrls } = await c.req.json<{ email: string; links?: string[] }>();
 
-serve({
-  fetch: app.fetch,
-  port: 3000
-}, (info) => {
-  console.log(`Server is running on http://localhost:${info.port}`)
-})
+  const [newUser] = await db.insert(users).values({ email }).returning();
+
+  if (linkUrls && linkUrls.length > 0) {
+    await db.insert(links).values(
+      linkUrls.map((url) => ({ url, userId: newUser.id }))
+    );
+  }
+
+  return c.json(newUser, 201);
+});
+
+// Alle User mit ihren Links abrufen (1:n aufgelöst)
+app.get('/users', async (c) => {
+  const usersWithLinks = await db.query.users.findMany({
+    with: {
+      links: true, // Löst die 1:n-Beziehung auf
+    },
+  });
+  return c.json(usersWithLinks);
+});
+
+export default app;
