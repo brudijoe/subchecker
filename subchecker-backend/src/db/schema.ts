@@ -11,11 +11,10 @@ export const links = pgTable('links', {
     url: text().notNull(),
     userId: integer('user_id')
         .notNull()
-        .references(() => users.id, { onDelete: 'cascade' }), // Fremdschlüssel
+        .references(() => users.id, { onDelete: 'cascade' }),
     createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 });
 
-// Relationen für die Query-API
 export const relations = defineRelations({ users, links }, (r) => ({
     users: {
         links: r.many.links(),

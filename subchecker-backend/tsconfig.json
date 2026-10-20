@@ -1,5 +1,7 @@
 {
   "compilerOptions": {
+    "allowJs": true,
+    "checkJs": false,
     "target": "ESNext",
     "module": "NodeNext",
     "strict": true,
@@ -13,5 +15,8 @@
     "rootDir": "./src",
     "outDir": "./dist"
   },
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules",
+    "drizzle.config.ts"
+  ]
 }
