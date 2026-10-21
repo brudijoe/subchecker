@@ -18,6 +18,10 @@ export default defineConfig({
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/yt/, ""),
       },
+      "/health": {
+        target: "http://localhost:3000",
+        changeOrigin: true,
+      },
     },
   },
 })
