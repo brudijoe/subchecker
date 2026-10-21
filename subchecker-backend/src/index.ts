@@ -2,10 +2,12 @@ import 'dotenv/config';
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
 import links from './links.js';
+import health from './health.js';
 
 const app = new Hono();
 
-app.route('/links', links)
+app.route('/health', health);
+app.route('/links', links);
 
 const port = Number(process.env.PORT ?? 3000);
 
@@ -14,6 +16,6 @@ serve({
   port
 }, (info) => {
   console.log(`Server is running on http://localhost:${info.port}/links`)
-})
+});
 
 export default app;
