@@ -92,10 +92,10 @@ export function SystemStatus() {
                     <div className="flex items-start gap-3 p-4">
                         <div
                             className={`flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted ${isChecking
-                                    ? "text-muted-foreground"
-                                    : isOperational
-                                        ? "text-emerald-600 dark:text-emerald-400"
-                                        : "text-destructive"
+                                ? "text-muted-foreground"
+                                : isOperational
+                                    ? "text-emerald-600 dark:text-emerald-400"
+                                    : "text-destructive"
                                 }`}
                         >
                             {isChecking ? (
@@ -113,7 +113,7 @@ export function SystemStatus() {
                                 {statusDescription}
                             </p>
                             <p className="pt-1 text-xs text-muted-foreground">
-                                Automatic check every 15 seconds
+                                Click refresh to check the system status again.
                             </p>
                         </div>
 

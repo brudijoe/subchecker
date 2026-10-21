@@ -15,8 +15,7 @@ async function fetchHealth(): Promise<HealthResponse> {
     })
 
     if (response.status === 503) {
-        const data = (await response.json()) as HealthResponse
-        return data
+        return (await response.json()) as HealthResponse
     }
 
     if (!response.ok) {
@@ -31,18 +30,17 @@ export function useHealth(enabled = true) {
         queryKey: ["health"],
         queryFn: fetchHealth,
         enabled,
-        refetchInterval: 15_000,
-        staleTime: 0,
-        retry: 1,
-        refetchOnWindowFocus: true,
+        staleTime: Infinity,
+        refetchOnWindowFocus: false,
+        refetchOnReconnect: false,
+        refetchInterval: false,
     })
 
     const isOperational =
         !query.isError &&
         query.data?.status === "operational" &&
         query.data.checks.api === "ok" &&
-        query.data.checks.database === "ok" &&
-        Date.now() - query.dataUpdatedAt < 20_000
+        query.data.checks.database === "ok"
 
     return {
         ...query,
