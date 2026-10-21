@@ -1,7 +1,6 @@
 import type { Link } from "@/types/types";
-import { useQuery } from "@tanstack/react-query"
 
-async function hasEnglishSubtitles(link: string): Promise<Link> {
+export async function fetchSubtitleInfo(link: string): Promise<Link> {
     const url = new URL(link);
     const proxyPath = `/yt${url.pathname}${url.search}`;
 
@@ -48,15 +47,4 @@ async function hasEnglishSubtitles(link: string): Promise<Link> {
                 && track.vssId && !track.vssId.startsWith("a.")
         )
     };
-}
-
-export function useLink(link: string) {
-    return useQuery({
-        queryKey: ["link", link],
-        queryFn: () => hasEnglishSubtitles(link),
-        refetchOnMount: false,
-        refetchOnWindowFocus: false,
-        refetchOnReconnect: false,
-        staleTime: Infinity
-    });
 }

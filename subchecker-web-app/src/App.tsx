@@ -1,12 +1,8 @@
-import { useSelector } from "@tanstack/react-store";
 import { TableLink } from "./pages/table-link";
-import { linkStore } from "./stores/LinkStore";
 import { Play } from "lucide-react";
 import { DialogLink } from "./pages/dialog-link";
 
 function App() {
-  const links = useSelector(linkStore, (state) => state.links);
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-8 sm:px-6 sm:py-12">
@@ -25,7 +21,7 @@ function App() {
             Keep track of your YouTube links and see if English subtitles are available.
           </p>
         </header>
-        <TableLink links={links} />
+        <TableLink />
         <DialogLink />
       </main>
     </div>

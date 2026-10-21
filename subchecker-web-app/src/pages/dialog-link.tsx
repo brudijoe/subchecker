@@ -13,22 +13,26 @@ import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { ArrowRight, Link2, Plus } from "lucide-react"
-import { addLink } from "@/stores/LinkStore"
-import { useState } from "react"
+import { useState, type ChangeEvent } from "react"
+import { useCreateLink } from "@/hooks/useLinks"
 
 export function DialogLink() {
     const [open, setOpen] = useState(false)
     const [link, setLink] = useState("")
+    const createMutation = useCreateLink()
 
-    const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
         setLink(event.target.value)
     }
 
     const handleSubmit = (event: React.SubmitEvent<HTMLFormElement>) => {
         event.preventDefault()
-        addLink(link)
-        setLink("")
-        setOpen(false)
+        createMutation.mutate(link.trim(), {
+            onSuccess: () => {
+                setLink("")
+                setOpen(false)
+            },
+        })
     }
 
     return (
@@ -67,10 +71,16 @@ export function DialogLink() {
                             </div>
                         </Field>
                     </FieldGroup>
+                    {/* TODO */}
+                    {createMutation.isError && (
+                        <p role="alert" className="text-sm text-destructive">
+                            {createMutation.error.message}
+                        </p>
+                    )}
                     <DialogFooter>
                         <DialogClose render={<Button type="button" variant="outline">Cancel</Button>} />
-                        <Button type="submit" className="gap-2 font-semibold">
-                            Check link
+                        <Button type="submit" className="gap-2 font-semibold" disabled={createMutation.isPending}>
+                            {createMutation.isPending ? "Saving…" : "Check link"}
                             <ArrowRight className="size-4" aria-hidden="true" />
                         </Button>
                     </DialogFooter>

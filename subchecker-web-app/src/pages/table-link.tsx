@@ -10,9 +10,9 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { Badge } from "@/components/ui/badge";
 import { CircleCheck, CircleX, Trash } from "lucide-react";
-import { useLink } from "@/hooks/useLink";
 import { Skeleton } from "@/components/ui/skeleton";
-import { removeLink } from "@/stores/LinkStore";
+import { useDeleteLink, useLinkChecks, useLinks } from "@/hooks/useLinks";
+import type { LinkRowProps } from "@/types/types";
 
 function TableLinkSkeletonRow() {
     return (
@@ -42,17 +42,8 @@ function TableLinkSkeletonRow() {
     );
 }
 
-type LinkProps = {
-    link: string;
-    index: number;
-}
-
-function TableLinkRow({ link, index }: LinkProps) {
-    const { data, isPending, isError, isFetching, refetch } = useLink(link);
-
-    const handleDeleteLink = (index: number) => {
-        removeLink(index);
-    }
+function TableLinkRow({ link, check, isDeleting, onDelete }: LinkRowProps) {
+    const { data, isPending, isError, isFetching, refetch } = check;
 
     return (
         <>
@@ -66,7 +57,7 @@ function TableLinkRow({ link, index }: LinkProps) {
                                 <Spinner className="size-4" />
                             ) : isError ? (
                                 <Badge variant="destructive">Error</Badge>
-                            ) : data.hasSubs ? (
+                            ) : data?.hasSubs ? (
                                 <CircleCheck className="size-4" />
                             ) : (
                                 <CircleX className="size-4" />
@@ -75,12 +66,12 @@ function TableLinkRow({ link, index }: LinkProps) {
                     </TableCell>
                     <TableCell className="whitespace-normal [overflow-wrap:anywhere]">
                         <a
-                            href={link}
+                            href={link.url}
                             target="_blank"
                             rel="noreferrer"
                             className="hover:underline"
                         >
-                            {data?.title || link}
+                            {data?.title || link.url}
                         </a>
                     </TableCell>
                     <TableCell className="w-[80px] text-center">
@@ -89,7 +80,8 @@ function TableLinkRow({ link, index }: LinkProps) {
                             size="icon"
                             aria-label="Delete link"
                             title="Delete link"
-                            onClick={() => handleDeleteLink(index)}
+                            disabled={isDeleting}
+                            onClick={onDelete}
                         >
                             <Trash className="size-4" />
                         </Button>
@@ -110,7 +102,11 @@ function TableLinkRow({ link, index }: LinkProps) {
     );
 }
 
-export function TableLink({ links }: { links: string[] }) {
+export function TableLink() {
+    const { data: links = [], isPending, isError, error, } = useLinks();
+    const checkResults = useLinkChecks(links.map((link) => link.url));
+    const deleteMutation = useDeleteLink();
+
     return (
         <Table>
             <TableHeader>
@@ -121,10 +117,33 @@ export function TableLink({ links }: { links: string[] }) {
                     <TableHead className="text-center">Refresh</TableHead>
                 </TableRow>
             </TableHeader>
+
             <TableBody>
-                {links.map((link, index) => (
-                    <TableLinkRow key={link} index={index} link={link} />
-                ))}
+                {isPending ? (
+                    <TableLinkSkeletonRow />
+                ) : isError ? (
+                    <TableRow>
+                        <TableCell colSpan={4}>
+                            {error instanceof Error
+                                ? error.message
+                                : "The links could not be loaded."}
+                        </TableCell>
+                    </TableRow>
+                ) : links.length === 0 ? (
+                    <TableRow>
+                        <TableCell colSpan={4}>No links added yet.</TableCell>
+                    </TableRow>
+                ) : (
+                    links.map((link, index) => (
+                        <TableLinkRow
+                            key={link.id}
+                            link={link}
+                            check={checkResults[index]}
+                            isDeleting={deleteMutation.isPending}
+                            onDelete={() => deleteMutation.mutate(link.id)}
+                        />
+                    ))
+                )}
             </TableBody>
         </Table>
     );
