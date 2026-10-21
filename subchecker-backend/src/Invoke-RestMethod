@@ -1,0 +1,41 @@
+// Get links
+$response = Invoke-RestMethod `
+    -Uri "http://localhost:3000/links" `
+    -Method Get
+
+$response
+
+// Get links table format
+$response | Format-Table id, url, createdAt
+
+// Add link
+$body = @{
+    url = "https://www.youtube.com/watch?v=wfaL-baiNUo"
+} | ConvertTo-Json
+
+$newLink = Invoke-RestMethod `
+    -Uri "http://localhost:3000/links" `
+    -Method Post `
+    -ContentType "application/json" `
+    -Body $body
+
+$newLink
+
+// Delete link
+$id = 1
+
+Invoke-RestMethod `
+    -Uri "http://localhost:3000/links/$id" `
+    -Method Delete
+
+// Test errors
+// 1. add wrong url - works TODO FIX
+$body = @{
+    url = "faulty-url"
+} | ConvertTo-Json
+
+Invoke-RestMethod `
+    -Uri "http://localhost:3000/links" `
+    -Method Post `
+    -ContentType "application/json" `
+    -Body $body

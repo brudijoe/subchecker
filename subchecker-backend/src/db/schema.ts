@@ -1,7 +1,8 @@
-import { pgTable, text, integer, timestamp } from 'drizzle-orm/pg-core';
+import { pgTable, text, integer } from 'drizzle-orm/pg-core';
+import { timestamps } from './shared.js';
 
-export const links = pgTable('links', {
+export const linksTable = pgTable('links', {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     url: text().notNull(),
-    createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
+    createdAt: timestamps.createdAt
 });
