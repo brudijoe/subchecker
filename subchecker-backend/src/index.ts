@@ -7,10 +7,6 @@ import { linksTable } from './db/schema.js';
 
 const app = new Hono();
 
-app.get('/', (context) => {
-  return context.text('Hello Hono!');
-});
-
 // Return all links saved in PostgreSQL.
 app.get('/links', async (context) => {
   const links = await db
@@ -50,7 +46,7 @@ serve({
   fetch: app.fetch,
   port
 }, (info) => {
-  console.log(`Server is running on http://localhost:${info.port}`)
+  console.log(`Server is running on http://localhost:${info.port}/links`)
 })
 
 export default app;
