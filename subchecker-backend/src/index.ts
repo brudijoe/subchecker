@@ -4,6 +4,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import links from './links.js';
 import health from './health.js';
+import { startSubtitleChecker } from './lib/subtitleChecker.js';
 
 const app = new Hono();
 
@@ -23,6 +24,7 @@ serve({
   port
 }, (info) => {
   console.log(`Server is running on http://localhost:${info.port}/links`)
+  startSubtitleChecker();
 });
 
 export default app;
