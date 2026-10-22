@@ -118,10 +118,8 @@ export function SystemStatus() {
                         </div>
 
                         <Button
+                            variant="outline"
                             type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="size-8 shrink-0"
                             onClick={() => void health.refetch()}
                             disabled={health.isFetching}
                             aria-label="Refresh system status"
@@ -133,6 +131,7 @@ export function SystemStatus() {
                             />
                         </Button>
                     </div>
+
 
                     <div className="grid grid-cols-2 gap-px border-t bg-border">
                         <div className="flex items-center gap-2 bg-card px-4 py-3">

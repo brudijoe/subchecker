@@ -71,7 +71,7 @@ function TableLinkRow({ link, check, isDeleting, onDelete }: LinkRowProps) {
                             rel="noreferrer"
                             className="hover:underline"
                         >
-                            {data?.title || link.url}
+                            {data?.title}
                         </a>
                     </TableCell>
                     <TableCell className="w-[80px] text-center">
@@ -103,7 +103,7 @@ function TableLinkRow({ link, check, isDeleting, onDelete }: LinkRowProps) {
 }
 
 export function TableLink() {
-    const { data: links = [], isPending, isError, error, } = useLinks();
+    const { data: links = [], isPending, isError } = useLinks();
     const checkResults = useLinkChecks(links.map((link) => link.url));
     const deleteMutation = useDeleteLink();
 
@@ -124,9 +124,7 @@ export function TableLink() {
                 ) : isError ? (
                     <TableRow>
                         <TableCell colSpan={4}>
-                            {error instanceof Error
-                                ? error.message
-                                : "The links could not be loaded."}
+                            The links could not be loaded.
                         </TableCell>
                     </TableRow>
                 ) : links.length === 0 ? (
