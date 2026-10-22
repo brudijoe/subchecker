@@ -8,10 +8,9 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Spinner } from "@/components/ui/spinner";
-import { Badge } from "@/components/ui/badge";
 import { CircleCheck, CircleX, Trash } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useDeleteLink, useLinkChecks, useLinks } from "@/hooks/useLinks";
+import { useCheckLink, useDeleteLink, useLinks } from "@/hooks/useLinks";
 import type { LinkRowProps } from "@/types/types";
 
 function TableLinkSkeletonRow() {
@@ -42,69 +41,61 @@ function TableLinkSkeletonRow() {
     );
 }
 
-function TableLinkRow({ link, check, isDeleting, onDelete }: LinkRowProps) {
-    const { data, isPending, isError, isFetching, refetch } = check;
-
+function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkRowProps) {
     return (
-        <>
-            {isPending ? (
-                <TableLinkSkeletonRow />
-            ) :
-                <TableRow>
-                    <TableCell className="w-[80px]">
-                        <div className="flex items-center justify-center">
-                            {isFetching ? (
-                                <Spinner className="size-4" />
-                            ) : isError ? (
-                                <Badge variant="destructive">Error</Badge>
-                            ) : data?.hasSubs ? (
-                                <CircleCheck className="size-4" />
-                            ) : (
-                                <CircleX className="size-4" />
-                            )}
-                        </div>
-                    </TableCell>
-                    <TableCell className="whitespace-normal [overflow-wrap:anywhere]">
-                        <a
-                            href={link.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="hover:underline"
-                        >
-                            {data?.title}
-                        </a>
-                    </TableCell>
-                    <TableCell className="w-[80px] text-center">
-                        <Button
-                            variant="ghost"
-                            size="icon"
-                            aria-label="Delete link"
-                            title="Delete link"
-                            disabled={isDeleting}
-                            onClick={onDelete}
-                        >
-                            <Trash className="size-4" />
-                        </Button>
-                    </TableCell>
-                    <TableCell className="w-[120px] text-center">
-                        <Button
-                            variant="outline"
-                            size="sm"
-                            disabled={isFetching}
-                            onClick={() => refetch()}
-                        >
-                            Check link
-                        </Button>
-                    </TableCell>
-                </TableRow>
-            }
-        </>
+        <TableRow>
+            <TableCell className="w-[80px]">
+                <div className="flex items-center justify-center">
+                    {isChecking ? (
+                        <Spinner className="size-4" />
+                    ) : link.englishSubtitles === true ? (
+                        <CircleCheck className="size-4" />
+                    ) : link.englishSubtitles === false ? (
+                        <CircleX className="size-4" />
+                    ) : (
+                        "-"
+                    )}
+                </div>
+            </TableCell>
+            <TableCell className="whitespace-normal [overflow-wrap:anywhere]">
+                <a
+                    href={link.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:underline"
+                >
+                    {link.title || link.url}
+                </a>
+            </TableCell>
+            <TableCell className="w-[80px] text-center">
+                <Button
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Delete link"
+                    title="Delete link"
+                    disabled={isDeleting}
+                    onClick={onDelete}
+                >
+                    <Trash className="size-4" />
+                </Button>
+            </TableCell>
+            <TableCell className="w-[120px] text-center">
+                <Button
+                    variant="outline"
+                    size="sm"
+                    disabled={isChecking}
+                    onClick={onCheck}
+                >
+                    Check link
+                </Button>
+            </TableCell>
+        </TableRow>
     );
 }
 
 export function TableLink() {
     const { data: links = [], isPending, isError } = useLinks();
-    const checkResults = useLinkChecks(links.map((link) => link.url));
+    const checkMutation = useCheckLink();
     const deleteMutation = useDeleteLink();
 
     return (
@@ -132,13 +123,14 @@ export function TableLink() {
                         <TableCell colSpan={4}>No links added yet.</TableCell>
                     </TableRow>
                 ) : (
-                    links.map((link, index) => (
+                    links.map((link) => (
                         <TableLinkRow
                             key={link.id}
                             link={link}
-                            check={checkResults[index]}
+                            isChecking={checkMutation.isPending && checkMutation.variables === link.id}
                             isDeleting={deleteMutation.isPending}
                             onDelete={() => deleteMutation.mutate(link.id)}
+                            onCheck={() => checkMutation.mutate(link.id)}
                         />
                     ))
                 )}

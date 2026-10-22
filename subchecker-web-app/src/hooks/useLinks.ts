@@ -1,6 +1,5 @@
-import { useMutation, useQueries, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createLink, deleteLink, fetchLinks } from "@/api/links";
-import { fetchSubtitleInfo } from "@/api/youtube";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { checkLink, createLink, deleteLink, fetchLinks } from "@/api/links";
 
 export function useLinks() {
     return useQuery({
@@ -13,26 +12,20 @@ export function useLinks() {
     });
 }
 
-export function useLinkChecks(urls: string[]) {
-    return useQueries({
-        queries: urls.map((url) => ({
-            queryKey: ["link", url],
-            queryFn: () => fetchSubtitleInfo(url),
-            enabled: Boolean(url),
-            refetchOnMount: false,
-            refetchOnWindowFocus: false,
-            refetchOnReconnect: false,
-            staleTime: Infinity,
-        })),
-    });
-}
-
-
 export function useCreateLink() {
     const queryClient = useQueryClient();
 
     return useMutation({
         mutationFn: createLink,
+        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["links"] }),
+    });
+}
+
+export function useCheckLink() {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: checkLink,
         onSuccess: () => queryClient.invalidateQueries({ queryKey: ["links"] }),
     });
 }

@@ -36,3 +36,15 @@ export async function deleteLink(id: number): Promise<void> {
         throw new Error(`Link konnte nicht gelöscht werden (${response.status})`);
     }
 }
+
+export async function checkLink(id: number): Promise<LinkDto> {
+    const response = await fetch(`${API_URL}/links/${id}/check`, {
+        method: 'POST',
+    });
+
+    if (!response.ok) {
+        throw new Error(`Untertitel konnten nicht geprüft werden (${response.status})`);
+    }
+
+    return response.json() as Promise<LinkDto>;
+}
