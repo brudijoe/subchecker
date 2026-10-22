@@ -13,13 +13,8 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/yt": {
-        target: "https://www.youtube.com",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/yt/, ""),
-      },
       "/health": {
-        target: "http://localhost:3000",
+        target: "http://localhost:3000", // TODO Wenn das Backend auf dem PI läuft dann target: "http://192.168.0.9:3000",
         changeOrigin: true,
       },
     },
