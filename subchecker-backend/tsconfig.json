@@ -17,6 +17,7 @@
   },
   "exclude": [
     "node_modules",
-    "drizzle.config.ts"
+    "drizzle.config.ts",
+    "dist"
   ]
 }
