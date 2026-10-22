@@ -1,11 +1,10 @@
-export type Link = {
-    title: string;
-    hasSubs: boolean;
-}
-
 export type LinkDto = {
     id: number;
     url: string;
+    title: string | null;
+    englishSubtitles: boolean | null;
+    subtitleCheckedAt: string | null;
+    notifiedAt: string | null;
 };
 
 export type LinkProps = {
@@ -13,13 +12,8 @@ export type LinkProps = {
 }
 
 export type LinkRowProps = LinkProps & {
-    check: {
-        data: Link | undefined;
-        isPending: boolean;
-        isError: boolean;
-        isFetching: boolean;
-        refetch: () => unknown;
-    };
+    isChecking: boolean;
     isDeleting: boolean;
     onDelete: () => void;
+    onCheck: () => void;
 };
