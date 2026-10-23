@@ -4,7 +4,9 @@ import { linksTable } from '../db/schema.js';
 import { fetchSubtitleInfo } from './fetchSubtitleInfo.js';
 import { sendNotification } from './notify.js';
 
+// Check one link and notify when English subtitles are available
 export async function checkLink(id: number) {
+    // Load the saved link to get its URL and notification state
     const [link] = await db
         .select()
         .from(linksTable)
@@ -13,7 +15,10 @@ export async function checkLink(id: number) {
 
     if (!link) return null;
 
+    // Fetch the latest subtitle information for this URL
     const info = await fetchSubtitleInfo(link.url);
+
+    // Save the latest title, subtitle status, and check time
     const [checkedLink] = await db
         .update(linksTable)
         .set({
@@ -24,6 +29,7 @@ export async function checkLink(id: number) {
         .where(eq(linksTable.id, id))
         .returning();
 
+    // Notify only if subtitles are available and no notification was sent before
     if (info.hasEnglishSubtitles && !link.notifiedAt) {
         try {
             await sendNotification({ title: info.title, url: link.url });

@@ -33,6 +33,7 @@ app.post('/', async (context) => {
     }
 });
 
+// Recheck a saved link on demand.
 app.post('/:id/check', async (context) => {
     const link = await checkLink(Number(context.req.param('id')));
     if (!link) return context.json({ error: 'Link not found' }, 404);
