@@ -12,8 +12,14 @@ RUN npm ci
 # Copy the TypeScript configuration and application source
 COPY tsconfig.json ./
 COPY src ./src
+COPY drizzle.config.ts ./
+COPY drizzle ./drizzle
 # Build the application
 RUN npm run build
+
+FROM build AS migrate
+
+CMD ["npm", "run", "db:push"]
 
 # Use an official Node runtime as a parent image for production
 FROM node:22-alpine AS runtime

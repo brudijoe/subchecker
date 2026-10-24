@@ -1,16 +1,16 @@
 # Use an offical Node runtime as a parent image
-FROM node:22-alpine
-# Set the working directory to /subchecker-web-app
-WORKDIR /subchecker-web-app
+FROM node:22-alpine AS build
+# Set the working directory
+WORKDIR /app
 # Copy package.json and package-lock.json to the container
-COPY package.json .
-COPY package-lock.json .
-# Install dependencies
-RUN npm install
-# Copy the rest of the application code to the container's working directory
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY . .
-# Expose port 5173 to the browser
-EXPOSE 5173
-# Run the command to start the server "npm run dev"
-# --host is important that the host computer is reachable
-CMD ["npm", "run", "dev", "--", "--host"]
+RUN npm run build
+
+FROM nginx:alpine AS runtime
+
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=build /app/dist /usr/share/nginx/html
+
+EXPOSE 80
