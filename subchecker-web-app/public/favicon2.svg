@@ -1,0 +1,15 @@
+<!-- public/favicon.svg -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <style>
+    .bg { fill: #f4f4f5; stroke: #e4e4e7; }
+    .fg { fill: #18181b; stroke: #18181b; }
+    @media (prefers-color-scheme: dark) {
+      .bg { fill: #27272a; stroke: #3f3f46; }
+      .fg { fill: #fafafa; stroke: #fafafa; }
+    }
+  </style>
+  <rect class="bg" x="0.5" y="0.5" width="31" height="31" rx="8" stroke-width="1"/>
+  <g transform="translate(9.5 9.5) scale(0.5)">
+    <polygon class="fg" points="6 3 20 12 6 21 6 3" stroke-width="2" stroke-linejoin="round"/>
+  </g>
+</svg>
