@@ -71,9 +71,9 @@ async function checkAllLinks(): Promise<void> {
 }
 
 export function startSubtitleChecker(): void {
-    const sixHours = 6 * 60 * 60 * 1000;
+    const oneHour = 1 * 60 * 60 * 1000;
 
     // Check saved links now and every six hours.
     void checkAllLinks();
-    setInterval(() => void checkAllLinks(), sixHours).unref();
+    setInterval(() => void checkAllLinks(), oneHour).unref();
 }
