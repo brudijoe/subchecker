@@ -79,6 +79,17 @@ describe("TableLink", () => {
         expect(screen.getByRole("link", { name: secondLink.url })).toHaveAttribute("href", secondLink.url)
     })
 
+    it("sorts links with English subtitles to the top", () => {
+        configureHooks({ data: [secondLink, firstLink], isPending: false, isError: false })
+
+        render(<TableLink />)
+
+        expect(screen.getAllByRole("link").map((link) => link.textContent)).toEqual([
+            "First video",
+            secondLink.url,
+        ])
+    })
+
     it("checks a link and deletes it only after confirmation", async () => {
         const user = userEvent.setup()
         configureHooks({ data: [firstLink, secondLink], isPending: false, isError: false })

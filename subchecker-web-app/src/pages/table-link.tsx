@@ -173,16 +173,20 @@ export function TableLink() {
                         <TableCell colSpan={4}>No links added yet.</TableCell>
                     </TableRow>
                 ) : (
-                    links.map((link) => (
-                        <TableLinkRow
-                            key={link.id}
-                            link={link}
-                            isChecking={checkMutation.isPending && checkMutation.variables === link.id}
-                            isDeleting={deleteMutation.isPending}
-                            onDelete={() => deleteMutation.mutate(link.id)}
-                            onCheck={() => checkMutation.mutate(link.id)}
-                        />
-                    ))
+                    links
+                        .toSorted((a, b) =>
+                            Number(b.englishSubtitles === true) - Number(a.englishSubtitles === true)
+                        )
+                        .map((link) => (
+                            <TableLinkRow
+                                key={link.id}
+                                link={link}
+                                isChecking={checkMutation.isPending && checkMutation.variables === link.id}
+                                isDeleting={deleteMutation.isPending}
+                                onDelete={() => deleteMutation.mutate(link.id)}
+                                onCheck={() => checkMutation.mutate(link.id)}
+                            />
+                        ))
                 )}
             </TableBody>
         </Table>
