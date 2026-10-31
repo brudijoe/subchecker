@@ -8,7 +8,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Spinner } from "@/components/ui/spinner";
-import { CircleCheck, CircleX, Trash } from "lucide-react";
+import { ChevronDown, ChevronUp, CircleCheck, CircleX, Trash } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCheckLink, useDeleteLink, useLinks } from "@/hooks/useLinks";
 import type { LinkRowProps } from "@/types/types";
@@ -54,6 +54,7 @@ function TableLinkSkeletonRow() {
 
 function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkRowProps) {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [titleExpanded, setTitleExpanded] = useState(false);
 
     return (
         <TableRow>
@@ -75,14 +76,38 @@ function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkR
                 </div>
             </TableCell>
             <TableCell className="whitespace-normal [overflow-wrap:anywhere]">
-                <a
-                    href={link.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:underline"
-                >
-                    {link.title || link.url}
-                </a>
+                <div>
+                    <a
+                        id={`link-title-${link.id}`}
+                        href={link.url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className={`hover:underline ${titleExpanded ? "line-clamp-none" : "line-clamp-2 sm:line-clamp-none"}`}
+                    >
+                        {link.title || link.url}
+                    </a>
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="mt-1 h-auto justify-start px-0 py-0 text-xs text-muted-foreground hover:bg-transparent sm:hidden"
+                        aria-expanded={titleExpanded}
+                        aria-controls={`link-title-${link.id}`}
+                        onClick={() => setTitleExpanded((expanded) => !expanded)}
+                    >
+                        {titleExpanded ? (
+                            <>
+                                <ChevronUp aria-hidden="true" />
+                                Show less
+                            </>
+                        ) : (
+                            <>
+                                <ChevronDown aria-hidden="true" />
+                                Show more
+                            </>
+                        )}
+                    </Button>
+                </div>
             </TableCell>
             <TableCell className="w-[80px] text-center">
                 <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>

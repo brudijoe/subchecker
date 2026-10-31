@@ -90,6 +90,24 @@ describe("TableLink", () => {
         ])
     })
 
+    it("allows expanding and collapsing a title", async () => {
+        const user = userEvent.setup()
+        configureHooks({ data: [firstLink], isPending: false, isError: false })
+
+        render(<TableLink />)
+
+        const title = screen.getByRole("link", { name: "First video" })
+        const expandButton = screen.getByRole("button", { name: "Show more" })
+
+        expect(title).toHaveClass("line-clamp-2")
+        expect(expandButton).toHaveAttribute("aria-expanded", "false")
+
+        await user.click(expandButton)
+
+        expect(title).toHaveClass("line-clamp-none")
+        expect(screen.getByRole("button", { name: "Show less" })).toHaveAttribute("aria-expanded", "true")
+    })
+
     it("checks a link and deletes it only after confirmation", async () => {
         const user = userEvent.setup()
         configureHooks({ data: [firstLink, secondLink], isPending: false, isError: false })
