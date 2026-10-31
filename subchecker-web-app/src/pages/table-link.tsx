@@ -49,9 +49,13 @@ function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkR
                     {isChecking ? (
                         <Spinner className="size-4" />
                     ) : link.englishSubtitles === true ? (
-                        <CircleCheck className="size-4" />
+                        <span className="rounded-full bg-emerald-500">
+                            <CircleCheck className="size-4" />
+                        </span>
                     ) : link.englishSubtitles === false ? (
-                        <CircleX className="size-4" />
+                        <span className="rounded-full bg-destructive">
+                            <CircleX className="size-4" />
+                        </span>
                     ) : (
                         "-"
                     )}
