@@ -71,7 +71,6 @@ export function DialogLink() {
                             </div>
                         </Field>
                     </FieldGroup>
-                    {/* TODO */}
                     {createMutation.isError && (
                         <p role="alert" className="text-sm text-destructive">
                             {createMutation.error.message}

@@ -12,6 +12,17 @@ import { CircleCheck, CircleX, Trash } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCheckLink, useDeleteLink, useLinks } from "@/hooks/useLinks";
 import type { LinkRowProps } from "@/types/types";
+import { useState } from "react";
+import {
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog";
 
 function TableLinkSkeletonRow() {
     return (
@@ -42,6 +53,8 @@ function TableLinkSkeletonRow() {
 }
 
 function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkRowProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
     return (
         <TableRow>
             <TableCell className="w-[80px]">
@@ -72,16 +85,49 @@ function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkR
                 </a>
             </TableCell>
             <TableCell className="w-[80px] text-center">
-                <Button
-                    variant="ghost"
-                    size="icon"
-                    aria-label="Delete link"
-                    title="Delete link"
-                    disabled={isDeleting}
-                    onClick={onDelete}
-                >
-                    <Trash className="size-4" />
-                </Button>
+                <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+                    <DialogTrigger
+                        render={
+                            <Button
+                                variant="ghost"
+                                size="icon"
+                                aria-label="Delete link"
+                                title="Delete link"
+                                disabled={isDeleting}
+                            >
+                                <Trash className="size-4" />
+                            </Button>
+                        }
+                    />
+                    <DialogContent>
+                        <DialogHeader>
+                            <DialogTitle>Delete this link?</DialogTitle>
+                            <DialogDescription>
+                                This action cannot be undone. The link will be removed from your list.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <DialogFooter>
+                            <DialogClose
+                                render={
+                                    <Button type="button" variant="outline">
+                                        Cancel
+                                    </Button>
+                                }
+                            />
+                            <Button
+                                type="button"
+                                variant="destructive"
+                                disabled={isDeleting}
+                                onClick={() => {
+                                    onDelete();
+                                    setDeleteDialogOpen(false);
+                                }}
+                            >
+                                Delete link
+                            </Button>
+                        </DialogFooter>
+                    </DialogContent>
+                </Dialog>
             </TableCell>
             <TableCell className="w-[120px] text-center">
                 <Button

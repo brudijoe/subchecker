@@ -79,7 +79,7 @@ describe("TableLink", () => {
         expect(screen.getByRole("link", { name: secondLink.url })).toHaveAttribute("href", secondLink.url)
     })
 
-    it("calls check and delete for the selected links", async () => {
+    it("checks a link and deletes it only after confirmation", async () => {
         const user = userEvent.setup()
         configureHooks({ data: [firstLink, secondLink], isPending: false, isError: false })
         render(<TableLink />)
@@ -89,7 +89,25 @@ describe("TableLink", () => {
         await user.click(within(rows[2]).getByRole("button", { name: "Delete link" }))
 
         expect(mocks.checkLink).toHaveBeenCalledWith(firstLink.id)
+        expect(mocks.deleteLink).not.toHaveBeenCalled()
+
+        const dialog = screen.getByRole("dialog")
+        expect(within(dialog).getByText("Delete this link?")).toBeInTheDocument()
+        await user.click(within(dialog).getByRole("button", { name: "Delete link" }))
+
         expect(mocks.deleteLink).toHaveBeenCalledWith(secondLink.id)
+    })
+
+    it("does not delete a link when deletion is cancelled", async () => {
+        const user = userEvent.setup()
+        configureHooks({ data: [firstLink], isPending: false, isError: false })
+        render(<TableLink />)
+
+        const row = screen.getAllByRole("row")[1]
+        await user.click(within(row).getByRole("button", { name: "Delete link" }))
+        await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Cancel" }))
+
+        expect(mocks.deleteLink).not.toHaveBeenCalled()
     })
 
     it("disables only the link currently being checked", () => {
