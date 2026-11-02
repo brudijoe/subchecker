@@ -8,7 +8,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Spinner } from "@/components/ui/spinner";
-import { ChevronDown, ChevronUp, CircleCheck, CircleX, Trash } from "lucide-react";
+import { ChevronDown, ChevronUp, CircleCheck, CircleX, Trash, RefreshCw } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCheckLink, useDeleteLink, useLinks } from "@/hooks/useLinks";
 import type { LinkRowProps } from "@/types/types";
@@ -59,6 +59,7 @@ function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkR
 
     return (
         <TableRow>
+            {/* Subtitles */}
             <TableCell className="w-[80px]">
                 <div className="flex items-center justify-center">
                     {isChecking ? (
@@ -76,6 +77,8 @@ function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkR
                     )}
                 </div>
             </TableCell>
+
+            {/* Title */}
             <TableCell className="whitespace-normal [overflow-wrap:anywhere]">
                 <div>
                     <a
@@ -144,6 +147,8 @@ function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkR
                     </Button>
                 </div>
             </TableCell>
+
+            {/* Delete */}
             <TableCell className="w-[80px] text-center">
                 <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                     <DialogTrigger
@@ -189,14 +194,18 @@ function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkR
                     </DialogContent>
                 </Dialog>
             </TableCell>
+
+            {/* Refresh */}
             <TableCell className="w-[120px] text-center">
                 <Button
-                    variant="outline"
-                    size="sm"
+                    variant="ghost"
+                    size="icon"
+                    aria-label="Refresh link"
+                    title="Refresh link"
                     disabled={isChecking}
                     onClick={onCheck}
                 >
-                    Check link
+                    <RefreshCw className="size-4" />
                 </Button>
             </TableCell>
         </TableRow>

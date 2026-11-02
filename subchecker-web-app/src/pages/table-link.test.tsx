@@ -144,7 +144,7 @@ describe("TableLink", () => {
         render(<TableLink />)
 
         const rows = screen.getAllByRole("row")
-        await user.click(within(rows[1]).getByRole("button", { name: "Check link" }))
+        await user.click(within(rows[1]).getByRole("button", { name: "Refresh link" }))
         await user.click(within(rows[2]).getByRole("button", { name: "Delete link" }))
 
         expect(mocks.checkLink).toHaveBeenCalledWith(firstLink.id)
@@ -178,7 +178,7 @@ describe("TableLink", () => {
         render(<TableLink />)
 
         const rows = screen.getAllByRole("row")
-        expect(within(rows[1]).getByRole("button", { name: "Check link" })).toBeDisabled()
-        expect(within(rows[2]).getByRole("button", { name: "Check link" })).toBeEnabled()
+        expect(within(rows[1]).getByRole("button", { name: "Refresh link" })).toBeDisabled()
+        expect(within(rows[2]).getByRole("button", { name: "Refresh link" })).toBeEnabled()
     })
 })
