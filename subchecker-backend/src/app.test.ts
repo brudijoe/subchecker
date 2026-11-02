@@ -35,7 +35,9 @@ describe('backend routes', () => {
     it('returns saved links', async (t) => {
         const links = [{ id: 1, url: 'https://example.com/video' }];
         t.mock.method(db, 'select', () => ({
-            from: () => ({ limit: async () => links }),
+            from: () => ({
+                orderBy: () => ({ limit: async () => links }),
+            }),
         }));
 
         const response = await app.request('/links');

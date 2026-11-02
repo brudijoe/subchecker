@@ -1,5 +1,5 @@
 import { Hono } from 'hono';
-import { eq } from 'drizzle-orm';
+import { asc, eq } from 'drizzle-orm';
 import { db } from './db/index.js';
 import { linksTable } from './db/schema.js';
 import { checkLink } from './lib/subtitleChecker.js';
@@ -11,6 +11,7 @@ app.get('/', async (context) => {
     const links = await db
         .select()
         .from(linksTable)
+        .orderBy(asc(linksTable.id))
         .limit(100);
 
     return context.json({ links });

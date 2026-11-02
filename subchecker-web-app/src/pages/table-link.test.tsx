@@ -90,6 +90,26 @@ describe("TableLink", () => {
         ])
     })
 
+    it("sorts links with the same subtitle status by ID", () => {
+        const thirdLink: LinkDto = {
+            id: 3,
+            url: "https://youtube.com/watch?v=third",
+            title: "Third video",
+            englishSubtitles: true,
+            subtitleCheckedAt: null,
+            notifiedAt: null,
+        }
+        configureHooks({ data: [thirdLink, secondLink, firstLink], isPending: false, isError: false })
+
+        render(<TableLink />)
+
+        expect(screen.getAllByRole("link").map((link) => link.textContent)).toEqual([
+            "First video",
+            "Third video",
+            secondLink.url,
+        ])
+    })
+
     it("allows expanding and collapsing a title", async () => {
         const user = userEvent.setup()
         configureHooks({ data: [firstLink], isPending: false, isError: false })

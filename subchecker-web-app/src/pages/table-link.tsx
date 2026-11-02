@@ -243,8 +243,10 @@ export function TableLink() {
                     </TableRow>
                 ) : (
                     links
-                        .toSorted((a, b) =>
-                            Number(b.englishSubtitles === true) - Number(a.englishSubtitles === true)
+                        // Keep subtitle links first and use IDs for stable ordering.
+                        .toSorted((leftLink, rightLink) =>
+                            Number(rightLink.englishSubtitles === true) - Number(leftLink.englishSubtitles === true)
+                            || leftLink.id - rightLink.id
                         )
                         .map((link) => (
                             <TableLinkRow
