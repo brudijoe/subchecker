@@ -54,6 +54,7 @@ function TableLinkSkeletonRow() {
 
 function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkRowProps) {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [openLinkDialogOpen, setOpenLinkDialogOpen] = useState(false);
     const [titleExpanded, setTitleExpanded] = useState(false);
 
     return (
@@ -82,10 +83,44 @@ function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkR
                         href={link.url}
                         target="_blank"
                         rel="noreferrer"
+                        onClick={(event) => {
+                            event.preventDefault();
+                            setOpenLinkDialogOpen(true);
+                        }}
                         className={`hover:underline ${titleExpanded ? "line-clamp-none" : "line-clamp-2 sm:line-clamp-none"}`}
                     >
                         {link.title || link.url}
                     </a>
+                    <Dialog open={openLinkDialogOpen} onOpenChange={setOpenLinkDialogOpen}>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Open this link on YouTube?</DialogTitle>
+                                <DialogDescription>
+                                    You are about to leave Subchecker and open this link on YouTube.
+                                </DialogDescription>
+                            </DialogHeader>
+                            <DialogFooter>
+                                <DialogClose
+                                    render={
+                                        <Button type="button" variant="outline">
+                                            Cancel
+                                        </Button>
+                                    }
+                                />
+                                <DialogClose
+                                    render={
+                                        <Button
+                                            render={
+                                                <a href={link.url} target="_blank" rel="noreferrer" />
+                                            }
+                                        >
+                                            Continue to YouTube
+                                        </Button>
+                                    }
+                                />
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
                     <Button
                         type="button"
                         variant="ghost"

@@ -27,7 +27,7 @@ describe("DialogLink", () => {
 
         await user.click(screen.getByRole("button", { name: "Add link" }))
         await user.type(screen.getByLabelText("YouTube URL"), "  https://youtube.com/watch?v=abc  ")
-        await user.click(screen.getByRole("button", { name: "Check link" }))
+        await user.click(screen.getByRole("button", { name: "Add link" }))
 
         expect(mocks.mutate).toHaveBeenCalledWith(
             "https://youtube.com/watch?v=abc",

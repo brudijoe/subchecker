@@ -106,6 +106,36 @@ describe("TableLink", () => {
 
         expect(title).toHaveClass("line-clamp-none")
         expect(screen.getByRole("button", { name: "Show less" })).toHaveAttribute("aria-expanded", "true")
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+    })
+
+    it("asks for confirmation before opening a link on YouTube", async () => {
+        const user = userEvent.setup()
+        configureHooks({ data: [firstLink], isPending: false, isError: false })
+        render(<TableLink />)
+
+        await user.click(screen.getByRole("link", { name: "First video" }))
+
+        const dialog = screen.getByRole("dialog")
+        expect(within(dialog).getByText("Open this link on YouTube?")).toBeInTheDocument()
+        expect(within(dialog).getByText(
+            "You are about to leave Subchecker and open this link on YouTube.",
+        )).toBeInTheDocument()
+
+        const continueLink = within(dialog).getByRole("link", { name: "Continue to YouTube" })
+        expect(continueLink).toHaveAttribute("href", firstLink.url)
+        expect(continueLink).toHaveAttribute("target", "_blank")
+    })
+
+    it("does not open a link when the confirmation is cancelled", async () => {
+        const user = userEvent.setup()
+        configureHooks({ data: [firstLink], isPending: false, isError: false })
+        render(<TableLink />)
+
+        await user.click(screen.getByRole("link", { name: "First video" }))
+        await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Cancel" }))
+
+        expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
     })
 
     it("checks a link and deletes it only after confirmation", async () => {

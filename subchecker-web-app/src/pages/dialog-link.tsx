@@ -12,7 +12,7 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { ArrowRight, Link2, Plus } from "lucide-react"
+import { Link2 } from "lucide-react"
 import { useState, type ChangeEvent } from "react"
 import { useCreateLink } from "@/hooks/useLinks"
 
@@ -40,7 +40,6 @@ export function DialogLink() {
             <DialogTrigger render={
                 <Button variant="outline">
                     Add link
-                    <Plus className="size-4" aria-hidden="true" />
                 </Button>} />
             <DialogContent className="sm:max-w-xl">
                 <form onSubmit={handleSubmit} className="grid gap-4">
@@ -79,8 +78,7 @@ export function DialogLink() {
                     <DialogFooter>
                         <DialogClose render={<Button type="button" variant="outline">Cancel</Button>} />
                         <Button type="submit" className="gap-2 font-semibold" disabled={createMutation.isPending}>
-                            {createMutation.isPending ? "Saving…" : "Check link"}
-                            <ArrowRight className="size-4" aria-hidden="true" />
+                            {createMutation.isPending ? "Saving…" : "Add link"}
                         </Button>
                     </DialogFooter>
                 </form>
