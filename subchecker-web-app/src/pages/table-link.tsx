@@ -205,7 +205,7 @@ function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkR
                     disabled={isChecking}
                     onClick={onCheck}
                 >
-                    <RefreshCw className="size-4" />
+                    <RefreshCw className={`size-4 ${isChecking ? "animate-spin" : ""}`} />
                 </Button>
             </TableCell>
         </TableRow>
