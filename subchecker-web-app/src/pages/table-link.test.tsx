@@ -164,10 +164,10 @@ describe("TableLink", () => {
         render(<TableLink />)
 
         const rows = screen.getAllByRole("row")
-        await user.click(within(rows[1]).getByRole("button", { name: "Refresh link" }))
+        await user.click(within(rows[2]).getByRole("button", { name: "Refresh link" }))
         await user.click(within(rows[2]).getByRole("button", { name: "Delete link" }))
 
-        expect(mocks.checkLink).toHaveBeenCalledWith(firstLink.id)
+        expect(mocks.checkLink).toHaveBeenCalledWith(secondLink.id)
         expect(mocks.deleteLink).not.toHaveBeenCalled()
 
         const dialog = screen.getByRole("dialog")
@@ -190,10 +190,21 @@ describe("TableLink", () => {
     })
 
     it("disables only the link currently being checked", () => {
+        const uncheckedFirstLink = { ...firstLink, englishSubtitles: null }
         configureHooks(
-            { data: [firstLink, secondLink], isPending: false, isError: false },
-            { isPending: true, variables: firstLink.id },
+            { data: [uncheckedFirstLink, secondLink], isPending: false, isError: false },
+            { isPending: true, variables: uncheckedFirstLink.id },
         )
+
+        render(<TableLink />)
+
+        const rows = screen.getAllByRole("row")
+        expect(within(rows[1]).getByRole("button", { name: "Refresh link" })).toBeDisabled()
+        expect(within(rows[2]).getByRole("button", { name: "Refresh link" })).toBeEnabled()
+    })
+
+    it("disables refresh when English subtitles are available", () => {
+        configureHooks({ data: [firstLink, secondLink], isPending: false, isError: false })
 
         render(<TableLink />)
 

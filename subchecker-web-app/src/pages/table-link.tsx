@@ -8,7 +8,7 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { Spinner } from "@/components/ui/spinner";
-import { ChevronDown, ChevronUp, CircleCheck, CircleX, Trash, RefreshCw } from "lucide-react";
+import { ChevronDown, ChevronUp, CircleCheck, CircleX, Trash, RefreshCw, RefreshCwOff } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCheckLink, useDeleteLink, useLinks } from "@/hooks/useLinks";
 import type { LinkRowProps } from "@/types/types";
@@ -202,10 +202,13 @@ function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkR
                     size="icon"
                     aria-label="Refresh link"
                     title="Refresh link"
-                    disabled={isChecking}
+                    disabled={isChecking || link.englishSubtitles === true}
                     onClick={onCheck}
                 >
-                    <RefreshCw className={`size-4 ${isChecking ? "animate-spin" : ""}`} />
+                    {link.englishSubtitles === true ?
+                        <RefreshCwOff className="size-4" />
+                        : <RefreshCw className={`size-4 ${isChecking ? "animate-spin" : ""}`} />
+                    }
                 </Button>
             </TableCell>
         </TableRow>
