@@ -3,8 +3,13 @@ import { asc, eq } from 'drizzle-orm';
 import { db } from './db/index.js';
 import { linksTable } from './db/schema.js';
 import { checkLink } from './lib/subtitleChecker.js';
+import { getYouTubeThumbnailUrl } from './lib/youtube.js';
 
 const app = new Hono();
+
+function addThumbnailUrl<T extends { url: string }>(link: T) {
+    return { ...link, thumbnailUrl: getYouTubeThumbnailUrl(link.url) };
+}
 
 // Return all links saved in PostgreSQL.
 app.get('/', async (context) => {
@@ -14,7 +19,7 @@ app.get('/', async (context) => {
         .orderBy(asc(linksTable.id))
         .limit(100);
 
-    return context.json({ links });
+    return context.json({ links: links.map(addThumbnailUrl) });
 });
 
 // Add links to PostgreSQL.
@@ -27,10 +32,10 @@ app.post('/', async (context) => {
         .returning();
 
     try {
-        return context.json(await checkLink(link.id) ?? link, 201);
+        return context.json(addThumbnailUrl(await checkLink(link.id) ?? link), 201);
     } catch (error) {
         console.error(`Could not check new link ${link.id}:`, error);
-        return context.json(link, 201);
+        return context.json(addThumbnailUrl(link), 201);
     }
 });
 
@@ -38,7 +43,7 @@ app.post('/', async (context) => {
 app.post('/:id/check', async (context) => {
     const link = await checkLink(Number(context.req.param('id')));
     if (!link) return context.json({ error: 'Link not found' }, 404);
-    return context.json(link);
+    return context.json(addThumbnailUrl(link));
 });
 
 // Remove one link by its database ID.

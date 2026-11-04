@@ -10,6 +10,7 @@ import {
 import { Spinner } from "@/components/ui/spinner";
 import { ChevronDown, ChevronUp, CircleCheck, CircleX, Trash, RefreshCw, RefreshCwOff } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import { LinkPreview } from "@/components/common/link-preview";
 import { useCheckLink, useDeleteLink, useLinks } from "@/hooks/useLinks";
 import type { LinkRowProps } from "@/types/types";
 import { useState } from "react";
@@ -81,19 +82,13 @@ function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkR
             {/* Title */}
             <TableCell className="whitespace-normal [overflow-wrap:anywhere]">
                 <div>
-                    <a
-                        id={`link-title-${link.id}`}
-                        href={link.url}
-                        target="_blank"
-                        rel="noreferrer"
-                        onClick={(event) => {
-                            event.preventDefault();
-                            setOpenLinkDialogOpen(true);
-                        }}
+                    <LinkPreview
+                        link={link}
+                        onOpenLink={() => setOpenLinkDialogOpen(true)}
                         className={`hover:underline ${titleExpanded ? "line-clamp-none" : "line-clamp-2 sm:line-clamp-none"}`}
                     >
                         {link.title || link.url}
-                    </a>
+                    </LinkPreview>
                     <Dialog open={openLinkDialogOpen} onOpenChange={setOpenLinkDialogOpen}>
                         <DialogContent>
                             <DialogHeader>

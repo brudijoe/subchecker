@@ -1,19 +1,14 @@
+import { getYouTubeVideoId } from './youtube.js';
+
 type SubtitleInfo = {
     title: string;
     hasEnglishSubtitles: boolean;
 };
 
-function getVideoId(link: string): string {
-    const url = new URL(link);
-    const pathParts = url.pathname.split('/').filter(Boolean);
-    const videoId = url.searchParams.get('v') ?? pathParts[pathParts.length - 1];
-
-    if (!videoId) throw new Error('Missing YouTube video ID');
-    return videoId;
-}
-
 export async function fetchSubtitleInfo(link: string): Promise<SubtitleInfo> {
-    const videoId = getVideoId(link);
+    const videoId = getYouTubeVideoId(link);
+    if (!videoId) throw new Error('Missing YouTube video ID');
+
     const response = await fetch(`https://www.youtube.com/watch?v=${videoId}&hl=en`);
 
     if (!response.ok) throw new Error('Could not load the YouTube video');

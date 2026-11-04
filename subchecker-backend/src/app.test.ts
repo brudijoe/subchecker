@@ -2,6 +2,23 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { db } from './db/index.js';
 import app from './app.js';
+import { getYouTubeThumbnailUrl } from './lib/youtube.js';
+
+describe('YouTube helpers', () => {
+    it('gets thumbnail URLs from YouTube link formats', () => {
+        const videoId = 'wfaL-baiNUo';
+
+        assert.equal(
+            getYouTubeThumbnailUrl(`https://www.youtube.com/watch?v=${videoId}`),
+            `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+        );
+        assert.equal(
+            getYouTubeThumbnailUrl(`https://youtu.be/${videoId}`),
+            `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
+        );
+        assert.equal(getYouTubeThumbnailUrl('https://example.com/video'), null);
+    });
+});
 
 describe('backend routes', () => {
     it('returns operational status when the database responds', async (t) => {
@@ -33,7 +50,7 @@ describe('backend routes', () => {
     });
 
     it('returns saved links', async (t) => {
-        const links = [{ id: 1, url: 'https://example.com/video' }];
+        const links = [{ id: 1, url: 'https://www.youtube.com/watch?v=wfaL-baiNUo' }];
         t.mock.method(db, 'select', () => ({
             from: () => ({
                 orderBy: () => ({ limit: async () => links }),
@@ -43,7 +60,12 @@ describe('backend routes', () => {
         const response = await app.request('/links');
 
         assert.equal(response.status, 200);
-        assert.deepEqual(await response.json(), { links });
+        assert.deepEqual(await response.json(), {
+            links: [{
+                ...links[0],
+                thumbnailUrl: 'https://i.ytimg.com/vi/wfaL-baiNUo/hqdefault.jpg',
+            }],
+        });
     });
 
     it('creates a link and returns it when checking finds no update', async (t) => {
@@ -62,7 +84,30 @@ describe('backend routes', () => {
         });
 
         assert.equal(response.status, 201);
-        assert.deepEqual(await response.json(), savedLink);
+        assert.deepEqual(await response.json(), { ...savedLink, thumbnailUrl: null });
+    });
+
+    it('includes the thumbnail when the initial check fails', async (t) => {
+        const savedLink = { id: 8, url: 'https://www.youtube.com/watch?v=wfaL-baiNUo' };
+        t.mock.method(db, 'insert', () => ({
+            values: () => ({ returning: async () => [savedLink] }),
+        }));
+        t.mock.method(db, 'select', () => {
+            throw new Error('check failed');
+        });
+        t.mock.method(console, 'error', () => undefined);
+
+        const response = await app.request('/links', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: savedLink.url }),
+        });
+
+        assert.equal(response.status, 201);
+        assert.deepEqual(await response.json(), {
+            ...savedLink,
+            thumbnailUrl: 'https://i.ytimg.com/vi/wfaL-baiNUo/hqdefault.jpg',
+        });
     });
 
     it('returns 404 when a link to recheck does not exist', async (t) => {

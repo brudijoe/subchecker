@@ -1,6 +1,7 @@
 export type LinkDto = {
     id: number;
     url: string;
+    thumbnailUrl: string | null;
     title: string | null;
     englishSubtitles: boolean | null;
     subtitleCheckedAt: string | null;

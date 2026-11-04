@@ -21,6 +21,7 @@ vi.mock("@/hooks/useLinks", () => ({
 const firstLink: LinkDto = {
     id: 1,
     url: "https://youtube.com/watch?v=first",
+    thumbnailUrl: "https://i.ytimg.com/vi/first/hqdefault.jpg",
     title: "First video",
     englishSubtitles: true,
     subtitleCheckedAt: null,
@@ -30,6 +31,7 @@ const firstLink: LinkDto = {
 const secondLink: LinkDto = {
     id: 2,
     url: "https://youtube.com/watch?v=second",
+    thumbnailUrl: null,
     title: null,
     englishSubtitles: null,
     subtitleCheckedAt: null,
@@ -79,6 +81,30 @@ describe("TableLink", () => {
         expect(screen.getByRole("link", { name: secondLink.url })).toHaveAttribute("href", secondLink.url)
     })
 
+    it("shows a YouTube thumbnail and subtitle status on hover", async () => {
+        const user = userEvent.setup()
+        const linkWithPreview = {
+            ...firstLink,
+            url: "https://www.youtube.com/watch?v=wfaL-baiNUo",
+            thumbnailUrl: "https://i.ytimg.com/vi/wfaL-baiNUo/hqdefault.jpg",
+            title: "Video with preview",
+            englishSubtitles: false,
+        }
+        configureHooks({ data: [linkWithPreview], isPending: false, isError: false })
+
+        render(<TableLink />)
+
+        await user.hover(screen.getByRole("link", { name: "Video with preview" }))
+
+        expect(await screen.findByText("No English subtitles found")).toBeInTheDocument()
+        const thumbnail = document.querySelector("img")
+        expect(thumbnail).toHaveAttribute(
+            "src",
+            linkWithPreview.thumbnailUrl,
+        )
+        expect(thumbnail?.parentElement).toHaveClass("hidden", "md:block")
+    })
+
     it("sorts links with English subtitles to the top", () => {
         configureHooks({ data: [secondLink, firstLink], isPending: false, isError: false })
 
@@ -94,6 +120,7 @@ describe("TableLink", () => {
         const thirdLink: LinkDto = {
             id: 3,
             url: "https://youtube.com/watch?v=third",
+            thumbnailUrl: null,
             title: "Third video",
             englishSubtitles: true,
             subtitleCheckedAt: null,

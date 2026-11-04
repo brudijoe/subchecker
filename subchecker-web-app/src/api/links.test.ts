@@ -7,7 +7,12 @@ afterEach(() => {
 
 describe("links API", () => {
     it("loads links from the API", async () => {
-        const links = [{ id: 1, url: "https://youtube.com/watch?v=abc", title: "Video" }]
+        const links = [{
+            id: 1,
+            url: "https://youtube.com/watch?v=abc",
+            thumbnailUrl: "https://i.ytimg.com/vi/abc/hqdefault.jpg",
+            title: "Video",
+        }]
         const fetchMock = vi.fn().mockResolvedValue(Response.json({ links }))
         vi.stubGlobal("fetch", fetchMock)
 
@@ -16,7 +21,12 @@ describe("links API", () => {
     })
 
     it("sends a link as JSON when creating a link", async () => {
-        const createdLink = { id: 2, url: "https://youtube.com/watch?v=abc", title: null }
+        const createdLink = {
+            id: 2,
+            url: "https://youtube.com/watch?v=abc",
+            thumbnailUrl: "https://i.ytimg.com/vi/abc/hqdefault.jpg",
+            title: null,
+        }
         const fetchMock = vi.fn().mockResolvedValue(Response.json(createdLink))
         vi.stubGlobal("fetch", fetchMock)
 
