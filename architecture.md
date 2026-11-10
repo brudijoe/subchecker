@@ -92,6 +92,65 @@ The environment file is generated from `roles/subchecker/templates/subchecker.en
 
 Locally, `docker compose` in `subchecker-backend` starts only PostgreSQL. The backend runs separately on port `3000`; the web app's Vite development server proxies `/links` and `/health` to it. On the Raspberry Pi, Nginx in the frontend container handles this proxying instead.
 
+## npm dependency map
+
+The diagram shows direct dependencies declared in each app's `package.json`, grouped by purpose. It is an overview, not the full transitive dependency tree; the lockfiles contain the exact resolved versions.
+
+```mermaid
+flowchart LR
+    subgraph Web["subchecker-web-app"]
+        WebApp["Web app"]
+        subgraph WebRuntime["Runtime dependencies"]
+            React["react · react-dom"]
+            Query["@tanstack/react-query · react-store"]
+            UI["@base-ui/react · cn · class-variance-authority"]
+            Icons["lucide-react"]
+            Styling["@tailwindcss/vite · tailwindcss · tw-animate-css"]
+            Font["@fontsource-variable/geist"]
+            WebTool["shadcn"]
+        end
+        subgraph WebDev["Development and test dependencies"]
+            TSWeb["typescript · @types/node · @types/react · @types/react-dom"]
+            Vite["vite · @vitejs/plugin-react"]
+            Tests["vitest · jsdom · @testing-library/*"]
+            Lint["oxlint · @tanstack/eslint-plugin-query"]
+            QueryTools["@tanstack/react-query-devtools"]
+        end
+        WebApp --> React
+        WebApp --> Query
+        WebApp --> UI
+        WebApp --> Icons
+        WebApp --> Styling
+        WebApp --> Font
+        WebApp --> WebTool
+        WebApp -. tooling .-> TSWeb
+        WebApp -. tooling .-> Vite
+        WebApp -. tooling .-> Tests
+        WebApp -. tooling .-> Lint
+        WebApp -. tooling .-> QueryTools
+    end
+
+    subgraph Backend["subchecker-backend"]
+        BackendApp["Backend"]
+        subgraph BackendRuntime["Runtime dependencies"]
+            Hono["hono · @hono/node-server"]
+            DB["drizzle-orm · pg · dotenv"]
+        end
+        subgraph BackendDev["Development dependencies"]
+            TSBackend["typescript · @types/node · @types/pg"]
+            DBTools["drizzle-kit"]
+            BackendTools["tsx"]
+        end
+        BackendApp --> Hono
+        BackendApp --> DB
+        BackendApp -. tooling .-> TSBackend
+        BackendApp -. tooling .-> DBTools
+        BackendApp -. tooling .-> BackendTools
+    end
+```
+
+The frontend and backend are separate npm projects, each with its own `package-lock.json`. Update and validate them from their respective directories; matching package names such as `typescript` or `@types/node` do not mean the two projects share a version.
+
 ## Related code and configuration
 
 - Backend routes and server startup: [subchecker-backend/src/index.ts](subchecker-backend/src/index.ts), [subchecker-backend/src/links.ts](subchecker-backend/src/links.ts)
