@@ -10,12 +10,20 @@ type LinkPreviewProps = {
     onOpenLink: () => void;
 };
 
+function getSubtitleStatus(englishSubtitles: LinkDto["englishSubtitles"]): string {
+    if (englishSubtitles === true) {
+        return "English subtitles available";
+    }
+
+    if (englishSubtitles === false) {
+        return "No English subtitles found";
+    }
+
+    return "Subtitle status not checked yet";
+}
+
 export function LinkPreview({ link, children, className, onOpenLink }: LinkPreviewProps) {
-    const subtitleStatus = link.englishSubtitles === true
-        ? "English subtitles available"
-        : link.englishSubtitles === false
-            ? "No English subtitles found"
-            : "Subtitle status not checked yet";
+    const subtitleStatus = getSubtitleStatus(link.englishSubtitles);
 
     return (
         <PreviewCard.Root>

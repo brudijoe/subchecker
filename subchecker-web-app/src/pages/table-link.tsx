@@ -13,7 +13,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { LinkPreview } from "@/components/common/link-preview";
 import { useCheckLink, useDeleteLink, useLinks } from "@/hooks/useLinks";
 import type { LinkRowProps } from "@/types/types";
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
     Dialog,
     DialogClose,
@@ -24,6 +24,31 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+
+function getSubtitleIndicator(
+    isChecking: boolean,
+    englishSubtitles: LinkRowProps["link"]["englishSubtitles"],
+) {
+    if (isChecking) return <Spinner className="size-4" />;
+
+    if (englishSubtitles === true) {
+        return (
+            <span className="rounded-full bg-emerald-500">
+                <CircleCheck className="size-4" />
+            </span>
+        );
+    }
+
+    if (englishSubtitles === false) {
+        return (
+            <span className="rounded-full bg-destructive">
+                <CircleX className="size-4" />
+            </span>
+        );
+    }
+
+    return "-";
+}
 
 function TableLinkSkeletonRow() {
     return (
@@ -63,19 +88,7 @@ function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkR
             {/* Subtitles */}
             <TableCell className="w-[80px]">
                 <div className="flex items-center justify-center">
-                    {isChecking ? (
-                        <Spinner className="size-4" />
-                    ) : link.englishSubtitles === true ? (
-                        <span className="rounded-full bg-emerald-500">
-                            <CircleCheck className="size-4" />
-                        </span>
-                    ) : link.englishSubtitles === false ? (
-                        <span className="rounded-full bg-destructive">
-                            <CircleX className="size-4" />
-                        </span>
-                    ) : (
-                        "-"
-                    )}
+                    {getSubtitleIndicator(isChecking, link.englishSubtitles)}
                 </div>
             </TableCell>
 
@@ -210,11 +223,42 @@ function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkR
     );
 }
 
-export function TableLink() {
+function MessageRow({ children }: { children: ReactNode }) {
+    return (
+        <TableRow>
+            <TableCell colSpan={4}>{children}</TableCell>
+        </TableRow>
+    );
+}
+
+function LinkRows() {
     const { data: links = [], isPending, isError } = useLinks();
     const checkMutation = useCheckLink();
     const deleteMutation = useDeleteLink();
 
+    if (isPending) return <TableLinkSkeletonRow />;
+    if (isError) return <MessageRow>The links could not be loaded.</MessageRow>;
+    if (links.length === 0) return <MessageRow>No links added yet.</MessageRow>;
+
+    return links
+        // Keep subtitle links first and use IDs for stable ordering.
+        .toSorted((leftLink, rightLink) =>
+            Number(rightLink.englishSubtitles === true) - Number(leftLink.englishSubtitles === true)
+            || leftLink.id - rightLink.id
+        )
+        .map((link) => (
+            <TableLinkRow
+                key={link.id}
+                link={link}
+                isChecking={checkMutation.isPending && checkMutation.variables === link.id}
+                isDeleting={deleteMutation.isPending}
+                onDelete={() => deleteMutation.mutate(link.id)}
+                onCheck={() => checkMutation.mutate(link.id)}
+            />
+        ))
+}
+
+export function TableLink() {
     return (
         <Table>
             <TableHeader>
@@ -227,36 +271,7 @@ export function TableLink() {
             </TableHeader>
 
             <TableBody>
-                {isPending ? (
-                    <TableLinkSkeletonRow />
-                ) : isError ? (
-                    <TableRow>
-                        <TableCell colSpan={4}>
-                            The links could not be loaded.
-                        </TableCell>
-                    </TableRow>
-                ) : links.length === 0 ? (
-                    <TableRow>
-                        <TableCell colSpan={4}>No links added yet.</TableCell>
-                    </TableRow>
-                ) : (
-                    links
-                        // Keep subtitle links first and use IDs for stable ordering.
-                        .toSorted((leftLink, rightLink) =>
-                            Number(rightLink.englishSubtitles === true) - Number(leftLink.englishSubtitles === true)
-                            || leftLink.id - rightLink.id
-                        )
-                        .map((link) => (
-                            <TableLinkRow
-                                key={link.id}
-                                link={link}
-                                isChecking={checkMutation.isPending && checkMutation.variables === link.id}
-                                isDeleting={deleteMutation.isPending}
-                                onDelete={() => deleteMutation.mutate(link.id)}
-                                onCheck={() => checkMutation.mutate(link.id)}
-                            />
-                        ))
-                )}
+                <LinkRows />
             </TableBody>
         </Table>
     );

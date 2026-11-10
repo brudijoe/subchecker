@@ -1,6 +1,10 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
+  "plugins": [
+    "react",
+    "typescript",
+    "oxc"
+  ],
   "rules": {
     "no-alert": "warn",
     "no-constant-binary-expression": "error",
@@ -39,19 +43,33 @@
     "no-useless-catch": "warn",
     "no-var": "error",
     "array-callback-return": "warn",
-    "curly": ["error", "multi-line"],
+    "curly": [
+      "error",
+      "multi-line"
+    ],
     "dot-notation": "warn",
     "eqeqeq": "error",
     "object-shorthand": "warn",
-    "one-var": ["warn", "never"],
+    "one-var": [
+      "warn",
+      "never"
+    ],
     "prefer-const": "error",
     "radix": "error",
     "use-isnan": "error",
     "valid-typeof": "error",
-    "typescript/consistent-type-definitions": ["warn", "type"],
+    "typescript/consistent-type-definitions": [
+      "warn",
+      "type"
+    ],
     "typescript/no-explicit-any": "warn",
     "react/jsx-key": "error",
     "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
+    "react/only-export-components": [
+      "warn",
+      {
+        "allowConstantExport": true
+      }
+    ]
   }
 }
