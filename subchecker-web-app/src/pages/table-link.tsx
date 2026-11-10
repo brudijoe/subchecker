@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
     Table,
     TableBody,
@@ -118,17 +118,15 @@ function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkR
                                         </Button>
                                     }
                                 />
-                                <DialogClose
-                                    render={
-                                        <Button
-                                            render={
-                                                <a href={link.url} target="_blank" rel="noreferrer" />
-                                            }
-                                        >
-                                            Continue to YouTube
-                                        </Button>
-                                    }
-                                />
+                                <a
+                                    className={buttonVariants()}
+                                    href={link.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    onClick={() => setOpenLinkDialogOpen(false)}
+                                >
+                                    Continue to YouTube
+                                </a>
                             </DialogFooter>
                         </DialogContent>
                     </Dialog>
