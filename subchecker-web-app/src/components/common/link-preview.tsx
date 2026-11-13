@@ -1,6 +1,8 @@
 import { PreviewCard } from "@base-ui/react/preview-card";
-import type { ReactNode } from "react";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { useState, type ReactNode } from "react";
 
+import { Button } from "@/components/ui/button";
 import type { LinkDto } from "@/types/types";
 
 type LinkPreviewProps = {
@@ -24,6 +26,7 @@ function getSubtitleStatus(englishSubtitles: LinkDto["englishSubtitles"]): strin
 
 export function LinkPreview({ link, children, className, onOpenLink }: LinkPreviewProps) {
     const subtitleStatus = getSubtitleStatus(link.englishSubtitles);
+    const [titleExpanded, setTitleExpanded] = useState(false);
 
     return (
         <PreviewCard.Root>
@@ -38,7 +41,7 @@ export function LinkPreview({ link, children, className, onOpenLink }: LinkPrevi
                     event.preventDefault();
                     onOpenLink();
                 }}
-                className={className}
+                className={`${className} ${titleExpanded ? "line-clamp-none" : "line-clamp-2 md:line-clamp-none"}`}
             >
                 {children}
             </PreviewCard.Trigger>
@@ -62,6 +65,49 @@ export function LinkPreview({ link, children, className, onOpenLink }: LinkPrevi
                         </PreviewCard.Popup>
                     </PreviewCard.Positioner>
                 </PreviewCard.Portal>
+            )}
+            <div className="mt-1 flex flex-col items-start">
+                <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-auto justify-start px-0 py-0 text-xs text-muted-foreground hover:bg-transparent md:hidden"
+                    aria-expanded={titleExpanded}
+                    aria-controls={`link-title-${link.id}`}
+                    onClick={() => setTitleExpanded((expanded) => !expanded)}
+                >
+                    {titleExpanded ? (
+                        <>
+                            <ChevronUp aria-hidden="true" />
+                            Show less
+                        </>
+                    ) : (
+                        <>
+                            <ChevronDown aria-hidden="true" />
+                            Show more
+                        </>
+                    )}
+                </Button>
+            </div>
+            {link.thumbnailUrl && titleExpanded && (
+                <div
+                    id={`link-preview-${link.id}`}
+                    className="mt-2 overflow-hidden rounded-xl border bg-card text-card-foreground md:hidden"
+                >
+                    <img
+                        src={link.thumbnailUrl}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        className="aspect-video w-full object-cover"
+                    />
+                    <div className="space-y-2 p-3">
+                        <p className="line-clamp-2 text-sm font-medium">
+                            {link.title || link.url}
+                        </p>
+                        <p className="text-xs text-muted-foreground">{subtitleStatus}</p>
+                    </div>
+                </div>
             )}
         </PreviewCard.Root>
     );

@@ -148,11 +148,22 @@ describe("TableLink", () => {
 
         expect(title).toHaveClass("line-clamp-2")
         expect(expandButton).toHaveAttribute("aria-expanded", "false")
+        expect(document.getElementById("link-preview-1")).not.toBeInTheDocument()
 
         await user.click(expandButton)
 
         expect(title).toHaveClass("line-clamp-none")
         expect(screen.getByRole("button", { name: "Show less" })).toHaveAttribute("aria-expanded", "true")
+        expect(document.getElementById("link-preview-1")).toHaveClass("md:hidden")
+        expect(screen.getByText("English subtitles available")).toBeInTheDocument()
+        expect(document.querySelector("#link-preview-1 img")).toHaveAttribute(
+            "src",
+            firstLink.thumbnailUrl,
+        )
+
+        await user.click(screen.getByRole("button", { name: "Show less" }))
+
+        expect(document.getElementById("link-preview-1")).not.toBeInTheDocument()
         expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
     })
 
