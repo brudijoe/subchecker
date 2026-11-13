@@ -12,20 +12,7 @@ type LinkPreviewProps = {
     onOpenLink: () => void;
 };
 
-function getSubtitleStatus(englishSubtitles: LinkDto["englishSubtitles"]): string {
-    if (englishSubtitles === true) {
-        return "English subtitles available";
-    }
-
-    if (englishSubtitles === false) {
-        return "No English subtitles found";
-    }
-
-    return "Subtitle status not checked yet";
-}
-
 export function LinkPreview({ link, children, className, onOpenLink }: LinkPreviewProps) {
-    const subtitleStatus = getSubtitleStatus(link.englishSubtitles);
     const [titleExpanded, setTitleExpanded] = useState(false);
 
     return (
@@ -56,12 +43,6 @@ export function LinkPreview({ link, children, className, onOpenLink }: LinkPrevi
                                 decoding="async"
                                 className="aspect-video w-full object-cover"
                             />
-                            <div className="space-y-2 p-3">
-                                <p className="line-clamp-2 text-sm font-medium">
-                                    {link.title || link.url}
-                                </p>
-                                <p className="text-xs text-muted-foreground">{subtitleStatus}</p>
-                            </div>
                         </PreviewCard.Popup>
                     </PreviewCard.Positioner>
                 </PreviewCard.Portal>
@@ -101,12 +82,6 @@ export function LinkPreview({ link, children, className, onOpenLink }: LinkPrevi
                         decoding="async"
                         className="aspect-video w-full object-cover"
                     />
-                    <div className="space-y-2 p-3">
-                        <p className="line-clamp-2 text-sm font-medium">
-                            {link.title || link.url}
-                        </p>
-                        <p className="text-xs text-muted-foreground">{subtitleStatus}</p>
-                    </div>
                 </div>
             )}
         </PreviewCard.Root>

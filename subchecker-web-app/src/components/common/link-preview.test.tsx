@@ -15,17 +15,13 @@ const link: LinkDto = {
 }
 
 describe("LinkPreview", () => {
-    it.each([
-        [true, "English subtitles available"],
-        [false, "No English subtitles found"],
-        [null, "Subtitle status not checked yet"],
-    ] as const)("shows the preview and subtitle status for %s", async (englishSubtitles, status) => {
+    it("shows the thumbnail without title or subtitle status", async () => {
         const user = userEvent.setup()
         render(
             <LinkPreview
-                link={{ ...link, englishSubtitles }}
+                link={link}
                 className="hover:underline"
-                onOpenLink={() => {}}
+                onOpenLink={() => { }}
             >
                 {link.title}
             </LinkPreview>,
@@ -33,11 +29,13 @@ describe("LinkPreview", () => {
 
         await user.click(screen.getByRole("button", { name: "Show more" }))
 
-        expect(screen.getByText(status)).toBeInTheDocument()
         expect(document.querySelector("#link-preview-1 img")).toHaveAttribute(
             "src",
             link.thumbnailUrl,
         )
+        expect(screen.queryByText("English subtitles available")).not.toBeInTheDocument()
+        expect(screen.queryByText("No English subtitles found")).not.toBeInTheDocument()
+        expect(screen.queryByText("Subtitle status not checked yet")).not.toBeInTheDocument()
     })
 
     it("expands the title without showing a preview when no thumbnail exists", async () => {
@@ -46,7 +44,7 @@ describe("LinkPreview", () => {
             <LinkPreview
                 link={{ ...link, thumbnailUrl: null }}
                 className="hover:underline"
-                onOpenLink={() => {}}
+                onOpenLink={() => { }}
             >
                 {link.title}
             </LinkPreview>,
