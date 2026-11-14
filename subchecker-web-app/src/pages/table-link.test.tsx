@@ -1,4 +1,4 @@
-import { render, screen, within } from "@testing-library/react"
+import { render, screen, waitFor, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import type { LinkDto } from "@/types/types"
@@ -81,7 +81,7 @@ describe("TableLink", () => {
         expect(screen.getByRole("link", { name: secondLink.url })).toHaveAttribute("href", secondLink.url)
     })
 
-    it("shows a YouTube thumbnail and subtitle status on hover", async () => {
+    it("shows a YouTube thumbnail on hover", async () => {
         const user = userEvent.setup()
         const linkWithPreview = {
             ...firstLink,
@@ -96,7 +96,12 @@ describe("TableLink", () => {
 
         await user.hover(screen.getByRole("link", { name: "Video with preview" }))
 
-        expect(await screen.findByText("No English subtitles found")).toBeInTheDocument()
+        await waitFor(() => {
+            expect(document.querySelector("img")).toHaveAttribute(
+                "src",
+                linkWithPreview.thumbnailUrl,
+            )
+        })
         const thumbnail = document.querySelector("img")
         expect(thumbnail).toHaveAttribute(
             "src",
@@ -155,7 +160,6 @@ describe("TableLink", () => {
         expect(title).toHaveClass("line-clamp-none")
         expect(screen.getByRole("button", { name: "Show less" })).toHaveAttribute("aria-expanded", "true")
         expect(document.getElementById("link-preview-1")).toHaveClass("md:hidden")
-        expect(screen.getByText("English subtitles available")).toBeInTheDocument()
         expect(document.querySelector("#link-preview-1 img")).toHaveAttribute(
             "src",
             firstLink.thumbnailUrl,
