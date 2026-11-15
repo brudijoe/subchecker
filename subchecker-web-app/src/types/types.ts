@@ -1,12 +1,7 @@
-export type LinkDto = {
-    id: number;
-    url: string;
-    thumbnailUrl: string | null;
-    title: string | null;
-    englishSubtitles: boolean | null;
-    subtitleCheckedAt: string | null;
-    notifiedAt: string | null;
-};
+import type { components } from "@/api/generated/openapi";
+
+export type LinkDto = components["schemas"]["Link"];
+export type LinkListDto = components["schemas"]["LinkList"];
 
 export type LinkProps = {
     link: LinkDto;

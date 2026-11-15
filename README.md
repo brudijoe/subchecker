@@ -46,6 +46,23 @@ npm run dev
 
 The Vite development server proxies `/links` and `/health` to the local backend.
 
+## OpenAPI types
+
+The backend API contract is defined in `subchecker-backend/openapi.yaml`.
+OpenAPI describes the API data shapes in a language-neutral format.
+The frontend generates TypeScript types from this contract with Node.js.
+Type generation does not verify that the backend implementation matches it.
+
+After changing an API request or response, update the contract and regenerate
+the frontend types from the repository root:
+
+```powershell
+npm --prefix subchecker-web-app run openapi:types
+```
+
+The generated types are in `subchecker-web-app/src/api/generated/openapi.d.ts`.
+`subchecker-web-app/src/types/types.ts` reuses the generated `Link` type.
+
 ## Raspberry Pi deployment
 
 The Pi deployment builds ARM64 images on the Raspberry Pi through Ansible. The

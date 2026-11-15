@@ -1,0 +1,176 @@
+openapi: 3.0.3
+info:
+  title: Subchecker API
+  version: 1.0.0
+  description: API for saved video links and subtitle checks.
+paths:
+  /links:
+    get:
+      operationId: getLinks
+      summary: Get saved links
+      responses:
+        '200':
+          description: Saved links
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LinkList'
+    post:
+      operationId: createLink
+      summary: Save a video link
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateLinkRequest'
+      responses:
+        '201':
+          description: Saved link
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Link'
+  /links/{id}/check:
+    post:
+      operationId: checkLink
+      summary: Check subtitles for a saved link
+      parameters:
+        - $ref: '#/components/parameters/LinkId'
+      responses:
+        '200':
+          description: Updated link
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Link'
+        '404':
+          description: Link not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+  /links/{id}:
+    delete:
+      operationId: deleteLink
+      summary: Delete a saved link
+      parameters:
+        - $ref: '#/components/parameters/LinkId'
+      responses:
+        '204':
+          description: Link deleted
+  /health:
+    get:
+      operationId: getHealth
+      summary: Check API and database health
+      responses:
+        '200':
+          description: API and database are operational
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+        '503':
+          description: Database is unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Health'
+components:
+  parameters:
+    LinkId:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+  schemas:
+    CreateLinkRequest:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+    LinkList:
+      type: object
+      required:
+        - links
+      properties:
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/Link'
+    Link:
+      type: object
+      required:
+        - id
+        - url
+        - thumbnailUrl
+        - title
+        - englishSubtitles
+        - subtitleCheckedAt
+        - notifiedAt
+        - createdAt
+      properties:
+        id:
+          type: integer
+        url:
+          type: string
+        thumbnailUrl:
+          type: string
+          nullable: true
+        title:
+          type: string
+          nullable: true
+        englishSubtitles:
+          type: boolean
+          nullable: true
+        subtitleCheckedAt:
+          type: string
+          format: date-time
+          nullable: true
+        notifiedAt:
+          type: string
+          format: date-time
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+    ApiError:
+      type: object
+      required:
+        - error
+      properties:
+        error:
+          type: string
+    Health:
+      type: object
+      required:
+        - status
+        - checks
+        - timestamp
+      properties:
+        status:
+          type: string
+          enum:
+            - operational
+            - degraded
+        checks:
+          type: object
+          required:
+            - api
+            - database
+          properties:
+            api:
+              type: string
+              enum:
+                - ok
+            database:
+              type: string
+              enum:
+                - ok
+                - error
+        timestamp:
+          type: string
+          format: date-time

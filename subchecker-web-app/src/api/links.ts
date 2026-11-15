@@ -1,4 +1,4 @@
-import type { LinkDto } from "@/types/types";
+import type { LinkDto, LinkListDto } from "@/types/types";
 
 export async function fetchLinks(): Promise<LinkDto[]> {
     const response = await fetch("/links");
@@ -7,7 +7,7 @@ export async function fetchLinks(): Promise<LinkDto[]> {
         throw new Error(`Links konnten nicht geladen werden (${response.status})`);
     }
 
-    const result = await response.json() as { links: LinkDto[] };
+    const result = await response.json() as LinkListDto;
     return result.links;
 }
 

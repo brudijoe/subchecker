@@ -26,6 +26,7 @@ const firstLink: LinkDto = {
     englishSubtitles: true,
     subtitleCheckedAt: null,
     notifiedAt: null,
+    createdAt: "2026-01-01T00:00:00.000Z",
 }
 
 const secondLink: LinkDto = {
@@ -36,6 +37,7 @@ const secondLink: LinkDto = {
     englishSubtitles: null,
     subtitleCheckedAt: null,
     notifiedAt: null,
+    createdAt: "2026-01-01T00:00:00.000Z",
 }
 
 function configureHooks(linksState: object, checkState = {}, deleteState = {}) {
@@ -130,6 +132,7 @@ describe("TableLink", () => {
             englishSubtitles: true,
             subtitleCheckedAt: null,
             notifiedAt: null,
+            createdAt: "2026-01-01T00:00:00.000Z",
         }
         configureHooks({ data: [thirdLink, secondLink, firstLink], isPending: false, isError: false })
 
