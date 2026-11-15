@@ -1,0 +1,12 @@
+{
+  "name": "subchecker",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently --kill-others --names backend,frontend \"npm --prefix subchecker-backend run dev\" \"npm --prefix subchecker-web-app run dev\"",
+    "dev:backend": "npm --prefix subchecker-backend run dev",
+    "dev:frontend": "npm --prefix subchecker-web-app run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
