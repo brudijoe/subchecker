@@ -23,6 +23,7 @@ export async function checkLink(id: number) {
         .update(linksTable)
         .set({
             title: info.title,
+            channelName: info.channelName,
             englishSubtitles: info.hasEnglishSubtitles,
             subtitleCheckedAt: new Date(),
         })

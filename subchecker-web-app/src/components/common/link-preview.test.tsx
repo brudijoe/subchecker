@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react"
+import { render, screen, within } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { describe, expect, it } from "vitest"
 import type { LinkDto } from "@/types/types"
@@ -9,6 +9,7 @@ const link: LinkDto = {
     url: "https://youtube.com/watch?v=first",
     thumbnailUrl: "https://i.ytimg.com/vi/first/hqdefault.jpg",
     title: "First video",
+    channelName: "Example Channel",
     englishSubtitles: true,
     subtitleCheckedAt: null,
     notifiedAt: null,
@@ -34,9 +35,30 @@ describe("LinkPreview", () => {
             "src",
             link.thumbnailUrl,
         )
+        expect(
+            within(document.getElementById("link-preview-1")!).getByText("Example Channel"),
+        ).toBeInTheDocument()
         expect(screen.queryByText("English subtitles available")).not.toBeInTheDocument()
         expect(screen.queryByText("No English subtitles found")).not.toBeInTheDocument()
         expect(screen.queryByText("Subtitle status not checked yet")).not.toBeInTheDocument()
+    })
+
+    it("shows the channel name below the desktop thumbnail", async () => {
+        const user = userEvent.setup()
+        render(
+            <LinkPreview
+                link={link}
+                className="hover:underline"
+                onOpenLink={() => { }}
+            >
+                {link.title}
+            </LinkPreview>,
+        )
+
+        await user.hover(screen.getByRole("link", { name: "First video" }))
+
+        const channelName = await screen.findByText("Example Channel")
+        expect(channelName.previousElementSibling).toHaveAttribute("src", link.thumbnailUrl)
     })
 
     it("expands the title without showing a preview when no thumbnail exists", async () => {

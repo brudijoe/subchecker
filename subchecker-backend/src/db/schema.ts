@@ -5,6 +5,7 @@ export const linksTable = pgTable('links', {
     id: integer().primaryKey().generatedAlwaysAsIdentity(),
     url: text().notNull(),
     title: text(),
+    channelName: text(),
     englishSubtitles: boolean(),
     subtitleCheckedAt: timestamps.subtitleCheckedAt,
     notifiedAt: timestamps.notifiedAt,

@@ -108,6 +108,7 @@ components:
         - url
         - thumbnailUrl
         - title
+        - channelName
         - englishSubtitles
         - subtitleCheckedAt
         - notifiedAt
@@ -121,6 +122,9 @@ components:
           type: string
           nullable: true
         title:
+          type: string
+          nullable: true
+        channelName:
           type: string
           nullable: true
         englishSubtitles:

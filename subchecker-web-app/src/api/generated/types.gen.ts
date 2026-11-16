@@ -17,6 +17,7 @@ export type Link = {
     url: string;
     thumbnailUrl: string | null;
     title: string | null;
+    channelName: string | null;
     englishSubtitles: boolean | null;
     subtitleCheckedAt: string | null;
     notifiedAt: string | null;

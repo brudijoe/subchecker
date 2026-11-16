@@ -88,6 +88,7 @@ export interface components {
             url: string;
             thumbnailUrl: string | null;
             title: string | null;
+            channelName: string | null;
             englishSubtitles: boolean | null;
             /** Format: date-time */
             subtitleCheckedAt: string | null;

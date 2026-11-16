@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 import { db } from './db/index.js';
 import app from './app.js';
+import { fetchSubtitleInfo } from './lib/fetchSubtitleInfo.js';
 import { getYouTubeThumbnailUrl } from './lib/youtube.js';
 
 describe('YouTube helpers', () => {
@@ -17,6 +18,28 @@ describe('YouTube helpers', () => {
             `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`,
         );
         assert.equal(getYouTubeThumbnailUrl('https://example.com/video'), null);
+    });
+});
+
+describe('YouTube video metadata', () => {
+    it('extracts the channel name from the player response', async (t) => {
+        const player = {
+            videoDetails: { title: 'Video title', author: 'Example Channel' },
+            captions: { playerCaptionsTracklistRenderer: { captionTracks: [] } },
+        };
+        t.mock.method(globalThis, 'fetch', async () => new Response(
+            `ytInitialPlayerResponse = ${JSON.stringify(player)};`,
+            { status: 200 },
+        ));
+
+        assert.deepEqual(
+            await fetchSubtitleInfo('https://youtube.com/watch?v=wfaL-baiNUo'),
+            {
+                title: 'Video title',
+                channelName: 'Example Channel',
+                hasEnglishSubtitles: false,
+            },
+        );
     });
 });
 
@@ -50,7 +73,11 @@ describe('backend routes', () => {
     });
 
     it('returns saved links', async (t) => {
-        const links = [{ id: 1, url: 'https://www.youtube.com/watch?v=wfaL-baiNUo' }];
+        const links = [{
+            id: 1,
+            url: 'https://www.youtube.com/watch?v=wfaL-baiNUo',
+            channelName: null,
+        }];
         t.mock.method(db, 'select', () => ({
             from: () => ({
                 orderBy: () => ({ limit: async () => links }),
@@ -69,7 +96,7 @@ describe('backend routes', () => {
     });
 
     it('creates a link and returns it when checking finds no update', async (t) => {
-        const savedLink = { id: 7, url: 'https://example.com/video' };
+        const savedLink = { id: 7, url: 'https://example.com/video', channelName: null };
         t.mock.method(db, 'insert', () => ({
             values: () => ({ returning: async () => [savedLink] }),
         }));
@@ -88,7 +115,11 @@ describe('backend routes', () => {
     });
 
     it('includes the thumbnail when the initial check fails', async (t) => {
-        const savedLink = { id: 8, url: 'https://www.youtube.com/watch?v=wfaL-baiNUo' };
+        const savedLink = {
+            id: 8,
+            url: 'https://www.youtube.com/watch?v=wfaL-baiNUo',
+            channelName: null,
+        };
         t.mock.method(db, 'insert', () => ({
             values: () => ({ returning: async () => [savedLink] }),
         }));

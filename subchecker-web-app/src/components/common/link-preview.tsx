@@ -43,6 +43,11 @@ export function LinkPreview({ link, children, className, onOpenLink }: LinkPrevi
                                 decoding="async"
                                 className="aspect-video w-full object-cover"
                             />
+                            {link.channelName && (
+                                <p className="truncate px-3 py-2 text-sm font-medium">
+                                    {link.channelName}
+                                </p>
+                            )}
                         </PreviewCard.Popup>
                     </PreviewCard.Positioner>
                 </PreviewCard.Portal>
@@ -82,6 +87,11 @@ export function LinkPreview({ link, children, className, onOpenLink }: LinkPrevi
                         decoding="async"
                         className="aspect-video w-full object-cover"
                     />
+                    {link.channelName && (
+                        <p className="truncate px-3 py-2 text-sm font-medium">
+                            {link.channelName}
+                        </p>
+                    )}
                 </div>
             )}
         </PreviewCard.Root>

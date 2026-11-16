@@ -2,6 +2,7 @@ import { getYouTubeVideoId } from './youtube.js';
 
 type SubtitleInfo = {
     title: string;
+    channelName: string | null;
     hasEnglishSubtitles: boolean;
 };
 
@@ -28,6 +29,7 @@ export async function fetchSubtitleInfo(link: string): Promise<SubtitleInfo> {
 
     return {
         title: player.videoDetails?.title ?? '',
+        channelName: player.videoDetails?.author ?? null,
         hasEnglishSubtitles: tracks.some((track: { languageCode?: string; vssId?: string }) =>
             track.languageCode?.startsWith('en')
             && track.vssId
