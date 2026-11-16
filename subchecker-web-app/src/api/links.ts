@@ -4,7 +4,7 @@ export async function fetchLinks(): Promise<LinkDto[]> {
     const response = await fetch("/links");
 
     if (!response.ok) {
-        throw new Error(`Links konnten nicht geladen werden (${response.status})`);
+        throw new Error(`Failed to load links (${response.status})`);
     }
 
     const result = await response.json() as LinkListDto;
@@ -19,7 +19,7 @@ export async function createLink(url: string): Promise<LinkDto> {
     });
 
     if (!response.ok) {
-        throw new Error(`Link konnte nicht gespeichert werden (${response.status})`);
+        throw new Error(`Failed to create link (${response.status})`);
     }
 
     return response.json() as Promise<LinkDto>;
@@ -31,7 +31,7 @@ export async function deleteLink(id: number): Promise<void> {
     });
 
     if (!response.ok) {
-        throw new Error(`Link konnte nicht gelöscht werden (${response.status})`);
+        throw new Error(`Failed to delete link (${response.status})`);
     }
 }
 
@@ -41,7 +41,7 @@ export async function checkLink(id: number): Promise<LinkDto> {
     });
 
     if (!response.ok) {
-        throw new Error(`Untertitel konnten nicht geprüft werden (${response.status})`);
+        throw new Error(`Failed to check subtitles (${response.status})`);
     }
 
     return response.json() as Promise<LinkDto>;

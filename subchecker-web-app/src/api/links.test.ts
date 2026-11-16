@@ -56,10 +56,10 @@ describe("links API", () => {
     })
 
     it.each([
-        ["fetchLinks", () => fetchLinks(), "Links konnten nicht geladen werden (500)"],
-        ["createLink", () => createLink("https://youtube.com/watch?v=abc"), "Link konnte nicht gespeichert werden (500)"],
-        ["deleteLink", () => deleteLink(1), "Link konnte nicht gelöscht werden (500)"],
-        ["checkLink", () => checkLink(1), "Untertitel konnten nicht geprüft werden (500)"],
+        ["fetchLinks", () => fetchLinks(), "Failed to load links (500)"],
+        ["createLink", () => createLink("https://youtube.com/watch?v=abc"), "Failed to create link (500)"],
+        ["deleteLink", () => deleteLink(1), "Failed to delete link (500)"],
+        ["checkLink", () => checkLink(1), "Failed to check subtitles (500)"],
     ])("surfaces HTTP failures for %s", async (_name, invoke, message) => {
         vi.stubGlobal("fetch", vi.fn().mockResolvedValue(new Response(null, { status: 500 })))
 
