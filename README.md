@@ -46,6 +46,14 @@ npm run dev
 
 The Vite development server proxies `/links` and `/health` to the local backend.
 
+## Dependency updates
+
+GitHub Dependabot checks the root tooling, backend, and frontend npm dependencies
+weekly. It groups minor and patch updates into pull requests per project; major
+updates are proposed separately so they can be reviewed and tested individually.
+Where available, Dependabot pull requests include links to release notes and
+changelogs.
+
 ## OpenAPI types
 
 The backend API contract is defined in `subchecker-backend/openapi.yaml`.
