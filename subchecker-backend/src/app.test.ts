@@ -3,7 +3,37 @@ import { describe, it } from 'node:test';
 import { db } from './db/index.js';
 import app from './app.js';
 import { fetchSubtitleInfo } from './lib/fetchSubtitleInfo.js';
+import { sendNotification } from './lib/notify.js';
 import { getYouTubeThumbnailUrl } from './lib/youtube.js';
+
+describe('ntfy notifications', () => {
+    it('does not open the video URL when the notification is tapped', async (t) => {
+        const previousTopic = process.env.NTFY_TOPIC;
+        process.env.NTFY_TOPIC = 'test-topic';
+        t.after(() => {
+            if (previousTopic === undefined) {
+                delete process.env.NTFY_TOPIC;
+            } else {
+                process.env.NTFY_TOPIC = previousTopic;
+            }
+        });
+
+        let request: RequestInit | undefined;
+        t.mock.method(globalThis, 'fetch', async (_input, init) => {
+            request = init;
+            return new Response(null, { status: 200 });
+        });
+
+        await sendNotification({
+            title: 'Video title',
+            url: 'https://www.youtube.com/watch?v=wfaL-baiNUo',
+        });
+
+        const headers = new Headers(request?.headers);
+        assert.equal(headers.has('Click'), false);
+        assert.equal(request?.body, 'Video title\nhttps://www.youtube.com/watch?v=wfaL-baiNUo');
+    });
+});
 
 describe('YouTube helpers', () => {
     it('gets thumbnail URLs from YouTube link formats', () => {
