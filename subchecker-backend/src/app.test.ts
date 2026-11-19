@@ -163,7 +163,7 @@ describe('backend routes', () => {
             channelName: null,
             englishSubtitles: null,
             subtitleCheckedAt: null,
-            refreshAvailableAt: null,
+            refreshAvailableAt: null as Date | null,
             notifiedAt: null,
             createdAt: new Date(),
             updatedAt: new Date(),
