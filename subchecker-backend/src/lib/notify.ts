@@ -12,7 +12,6 @@ export async function sendNotification({ title, url }: Notification): Promise<vo
         method: 'POST',
         headers: {
             Title: 'English subtitles available',
-            Click: url,
         },
         body: `${title || 'YouTube video'}\n${url}`,
     });
