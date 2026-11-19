@@ -68,4 +68,20 @@ describe("RefreshButton", () => {
 
         expect(screen.getByRole("button", { name: "Refresh link" })).toBeDisabled()
     })
+
+    it("restores the countdown from the server-provided expiry", () => {
+        vi.useFakeTimers()
+        vi.setSystemTime(new Date("2026-01-01T00:00:00.000Z"))
+
+        render(
+            <RefreshButton
+                hasEnglishSubtitles={false}
+                refreshAvailableAt="2026-01-01T00:05:00.000Z"
+                onRefresh={vi.fn()}
+            />,
+        )
+
+        expect(screen.getByText("05:00")).toBeInTheDocument()
+        expect(screen.getByRole("button", { name: "Refresh link. Available in 05:00" })).toBeDisabled()
+    })
 })

@@ -1,11 +1,12 @@
 import { Hono } from 'hono';
-import { asc, eq } from 'drizzle-orm';
+import { and, asc, eq, isNull, lte, or } from 'drizzle-orm';
 import { db } from './db/index.js';
 import { linksTable } from './db/schema.js';
 import { checkLink } from './lib/subtitleChecker.js';
 import { getYouTubeThumbnailUrl } from './lib/youtube.js';
 
 const app = new Hono();
+const REFRESH_COOLDOWN_MS = 5 * 60 * 1000;
 
 function addThumbnailUrl<T extends { url: string }>(link: T) {
     return { ...link, thumbnailUrl: getYouTubeThumbnailUrl(link.url) };
@@ -41,7 +42,43 @@ app.post('/', async (context) => {
 
 // Recheck a saved link on demand.
 app.post('/:id/check', async (context) => {
-    const link = await checkLink(Number(context.req.param('id')));
+    const id = Number(context.req.param('id'));
+    const now = new Date();
+    const refreshAvailableAt = new Date(now.getTime() + REFRESH_COOLDOWN_MS);
+
+    // Atomically claim this link's refresh slot to prevent parallel requests
+    // from bypassing the cooldown.
+    const [claimedLink] = await db
+        .update(linksTable)
+        .set({ refreshAvailableAt })
+        .where(and(
+            eq(linksTable.id, id),
+            or(
+                isNull(linksTable.refreshAvailableAt),
+                lte(linksTable.refreshAvailableAt, now),
+            ),
+        ))
+        .returning();
+
+    if (!claimedLink) {
+        const [existingLink] = await db
+            .select({ refreshAvailableAt: linksTable.refreshAvailableAt })
+            .from(linksTable)
+            .where(eq(linksTable.id, id))
+            .limit(1);
+
+        if (!existingLink) return context.json({ error: 'Link not found' }, 404);
+
+        const availableAt = existingLink.refreshAvailableAt ?? refreshAvailableAt;
+        const retryAfter = Math.max(1, Math.ceil((availableAt.getTime() - Date.now()) / 1000));
+        context.header('Retry-After', String(retryAfter));
+        return context.json({
+            error: 'Refresh cooldown active',
+            refreshAvailableAt: availableAt.toISOString(),
+        }, 429);
+    }
+
+    const link = await checkLink(id);
     if (!link) return context.json({ error: 'Link not found' }, 404);
     return context.json(addThumbnailUrl(link));
 });

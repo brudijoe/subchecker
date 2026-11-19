@@ -142,6 +142,9 @@ describe('backend routes', () => {
     });
 
     it('returns 404 when a link to recheck does not exist', async (t) => {
+        t.mock.method(db, 'update', () => ({
+            set: () => ({ where: () => ({ returning: async () => [] }) }),
+        }));
         t.mock.method(db, 'select', () => ({
             from: () => ({ where: () => ({ limit: async () => [] }) }),
         }));
@@ -150,6 +153,77 @@ describe('backend routes', () => {
 
         assert.equal(response.status, 404);
         assert.deepEqual(await response.json(), { error: 'Link not found' });
+    });
+
+    it('saves a server-side cooldown when a link is refreshed', async (t) => {
+        const link = {
+            id: 123,
+            url: 'https://youtube.com/watch?v=wfaL-baiNUo',
+            title: null,
+            channelName: null,
+            englishSubtitles: null,
+            subtitleCheckedAt: null,
+            refreshAvailableAt: null,
+            notifiedAt: null,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            deletedAt: null,
+        };
+        let savedLink = { ...link };
+        t.mock.method(db, 'update', () => {
+            let values: Record<string, unknown>;
+            return {
+                set: (nextValues: Record<string, unknown>) => {
+                    values = nextValues;
+                    return {
+                        where: () => ({
+                            returning: async () => {
+                                savedLink = { ...savedLink, ...values };
+                                return [savedLink];
+                            },
+                        }),
+                    };
+                },
+            };
+        });
+        t.mock.method(db, 'select', () => ({
+            from: () => ({
+                where: () => ({ limit: async () => [savedLink] }),
+            }),
+        }));
+        t.mock.method(globalThis, 'fetch', async () => new Response(
+            `ytInitialPlayerResponse = ${JSON.stringify({
+                videoDetails: { title: 'Video title', author: 'Example Channel' },
+                captions: { playerCaptionsTracklistRenderer: { captionTracks: [] } },
+            })};`,
+            { status: 200 },
+        ));
+
+        const response = await app.request('/links/123/check', { method: 'POST' });
+
+        assert.equal(response.status, 200);
+        const body = await response.json();
+        assert.equal(typeof body.refreshAvailableAt, 'string');
+        assert.equal(savedLink.refreshAvailableAt?.getTime(), Date.parse(body.refreshAvailableAt));
+    });
+
+    it('rejects a refresh while the server-side cooldown is active', async (t) => {
+        const refreshAvailableAt = new Date(Date.now() + 60_000);
+        t.mock.method(db, 'update', () => ({
+            set: () => ({ where: () => ({ returning: async () => [] }) }),
+        }));
+        t.mock.method(db, 'select', () => ({
+            from: () => ({ where: () => ({ limit: async () => [{ refreshAvailableAt }] }) }),
+        }));
+
+        const response = await app.request('/links/123/check', { method: 'POST' });
+
+        assert.equal(response.status, 429);
+        assert.equal(response.headers.get('Retry-After'), '60');
+        assert.deepEqual(await response.json(), {
+            error: 'Refresh cooldown active',
+            refreshAvailableAt: refreshAvailableAt.toISOString(),
+        });
     });
 
     it('deletes a link and returns no content', async (t) => {

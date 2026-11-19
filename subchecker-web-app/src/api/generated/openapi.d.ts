@@ -93,12 +93,19 @@ export interface components {
             /** Format: date-time */
             subtitleCheckedAt: string | null;
             /** Format: date-time */
+            refreshAvailableAt: string | null;
+            /** Format: date-time */
             notifiedAt: string | null;
             /** Format: date-time */
             createdAt: string;
         };
         ApiError: {
             error: string;
+        };
+        RefreshCooldownError: {
+            error: string;
+            /** Format: date-time */
+            refreshAvailableAt: string;
         };
         Health: {
             /** @enum {string} */
@@ -194,6 +201,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ApiError"];
+                };
+            };
+            /** Refresh cooldown is active */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["RefreshCooldownError"];
                 };
             };
         };

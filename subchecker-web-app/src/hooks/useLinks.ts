@@ -17,7 +17,7 @@ export function useCreateLink() {
 
     return useMutation({
         mutationFn: createLink,
-        onSuccess: () => queryClient.invalidateQueries({ queryKey: ["links"] }),
+        onSettled: () => queryClient.invalidateQueries({ queryKey: ["links"] }),
     });
 }
 

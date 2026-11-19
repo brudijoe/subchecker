@@ -43,4 +43,6 @@ npm run dev
 
 `docker compose up -d db` starts PostgreSQL in the background. `npm run db:push` creates or updates the database tables. `npm run dev` starts the backend at `http://localhost:3000`.
 
+After updating the backend, run `npm run db:push` before starting it so PostgreSQL gets the latest schema, including the persisted manual-refresh cooldown.
+
 Keep `.env` private. It contains your database password and is ignored by Git; do not commit it. `.env.example` is the safe template to share.

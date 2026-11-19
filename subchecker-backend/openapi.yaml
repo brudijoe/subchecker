@@ -50,6 +50,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/ApiError'
+        '429':
+          description: Refresh cooldown is active
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RefreshCooldownError'
   /links/{id}:
     delete:
       operationId: deleteLink
@@ -111,6 +117,7 @@ components:
         - channelName
         - englishSubtitles
         - subtitleCheckedAt
+        - refreshAvailableAt
         - notifiedAt
         - createdAt
       properties:
@@ -134,6 +141,10 @@ components:
           type: string
           format: date-time
           nullable: true
+        refreshAvailableAt:
+          type: string
+          format: date-time
+          nullable: true
         notifiedAt:
           type: string
           format: date-time
@@ -148,6 +159,17 @@ components:
       properties:
         error:
           type: string
+    RefreshCooldownError:
+      type: object
+      required:
+        - error
+        - refreshAvailableAt
+      properties:
+        error:
+          type: string
+        refreshAvailableAt:
+          type: string
+          format: date-time
     Health:
       type: object
       required:

@@ -8,6 +8,7 @@ const COOLDOWN_MS = 5 * 60 * 1000
 type RefreshButtonProps = {
     disabled?: boolean
     hasEnglishSubtitles: boolean
+    refreshAvailableAt?: string | null
     onRefresh: () => void
 }
 
@@ -21,37 +22,31 @@ function formatTime(seconds: number) {
 export function RefreshButton({
     disabled = false,
     hasEnglishSubtitles,
+    refreshAvailableAt = null,
     onRefresh,
 }: RefreshButtonProps) {
-    const [cooldownUntil, setCooldownUntil] = useState<number | null>(null)
+    const [optimisticCooldownUntil, setOptimisticCooldownUntil] = useState<number | null>(null)
     const [now, setNow] = useState(() => Date.now())
-    const remainingSeconds = cooldownUntil === null
-        ? 0
-        : Math.max(0, Math.ceil((cooldownUntil - now) / 1000))
+    const serverCooldownUntil = refreshAvailableAt ? Date.parse(refreshAvailableAt) : 0
+    const cooldownUntil = Math.max(serverCooldownUntil, optimisticCooldownUntil ?? 0)
+    const remainingSeconds = Math.max(0, Math.ceil((cooldownUntil - now) / 1000))
     const timeLabel = formatTime(remainingSeconds)
 
     useEffect(() => {
-        if (cooldownUntil === null) return
+        if (cooldownUntil <= now) return
 
         const intervalId = window.setInterval(() => {
-            const currentTime = Date.now()
-
-            if (currentTime >= cooldownUntil) {
-                setCooldownUntil(null)
-                return
-            }
-
-            setNow(currentTime)
+            setNow(Date.now())
         }, 1000)
 
         return () => window.clearInterval(intervalId)
-    }, [cooldownUntil])
+    }, [cooldownUntil, now])
 
     function handleRefresh() {
         const currentTime = Date.now()
         // Refresh the displayed clock immediately instead of waiting for the first timeout.
         setNow(currentTime)
-        setCooldownUntil(currentTime + COOLDOWN_MS)
+        setOptimisticCooldownUntil(currentTime + COOLDOWN_MS)
         onRefresh()
     }
 

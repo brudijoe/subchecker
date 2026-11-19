@@ -26,6 +26,7 @@ const firstLink: LinkDto = {
     channelName: null,
     englishSubtitles: true,
     subtitleCheckedAt: null,
+    refreshAvailableAt: null,
     notifiedAt: null,
     createdAt: "2026-01-01T00:00:00.000Z",
 }
@@ -38,6 +39,7 @@ const secondLink: LinkDto = {
     channelName: null,
     englishSubtitles: null,
     subtitleCheckedAt: null,
+    refreshAvailableAt: null,
     notifiedAt: null,
     createdAt: "2026-01-01T00:00:00.000Z",
 }
@@ -134,6 +136,7 @@ describe("TableLink", () => {
             channelName: null,
             englishSubtitles: true,
             subtitleCheckedAt: null,
+            refreshAvailableAt: null,
             notifiedAt: null,
             createdAt: "2026-01-01T00:00:00.000Z",
         }
