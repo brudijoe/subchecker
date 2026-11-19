@@ -20,18 +20,13 @@ export type Link = {
     channelName: string | null;
     englishSubtitles: boolean | null;
     subtitleCheckedAt: string | null;
-    refreshAvailableAt: string | null;
+    refreshRemainingMs: number;
     notifiedAt: string | null;
     createdAt: string;
 };
 
 export type ApiError = {
     error: string;
-};
-
-export type RefreshCooldownError = {
-    error: string;
-    refreshAvailableAt: string;
 };
 
 export type Health = {
@@ -94,7 +89,7 @@ export type CheckLinkErrors = {
     /**
      * Refresh cooldown is active
      */
-    429: RefreshCooldownError;
+    429: ApiError;
 };
 
 export type CheckLinkError = CheckLinkErrors[keyof CheckLinkErrors];

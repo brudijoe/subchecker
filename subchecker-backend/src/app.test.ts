@@ -91,8 +91,32 @@ describe('backend routes', () => {
             links: [{
                 ...links[0],
                 thumbnailUrl: 'https://i.ytimg.com/vi/wfaL-baiNUo/hqdefault.jpg',
+                refreshRemainingMs: 0,
             }],
         });
+    });
+
+    it('returns the refresh cooldown as a server-calculated duration', async (t) => {
+        const refreshAvailableAt = new Date(Date.now() + 60_000);
+        const links = [{
+            id: 1,
+            url: 'https://www.youtube.com/watch?v=wfaL-baiNUo',
+            refreshAvailableAt,
+        }];
+        t.mock.method(db, 'select', () => ({
+            from: () => ({
+                orderBy: () => ({ limit: async () => links }),
+            }),
+        }));
+
+        const response = await app.request('/links');
+        const body = await response.json() as {
+            links: Array<{ refreshRemainingMs: number; refreshAvailableAt?: unknown }>;
+        };
+
+        assert.ok(body.links[0].refreshRemainingMs > 59_000);
+        assert.ok(body.links[0].refreshRemainingMs <= 60_000);
+        assert.equal(body.links[0].refreshAvailableAt, undefined);
     });
 
     it('creates a link and returns it when checking finds no update', async (t) => {
@@ -111,7 +135,11 @@ describe('backend routes', () => {
         });
 
         assert.equal(response.status, 201);
-        assert.deepEqual(await response.json(), { ...savedLink, thumbnailUrl: null });
+        assert.deepEqual(await response.json(), {
+            ...savedLink,
+            thumbnailUrl: null,
+            refreshRemainingMs: 0,
+        });
     });
 
     it('includes the thumbnail when the initial check fails', async (t) => {
@@ -138,6 +166,7 @@ describe('backend routes', () => {
         assert.deepEqual(await response.json(), {
             ...savedLink,
             thumbnailUrl: 'https://i.ytimg.com/vi/wfaL-baiNUo/hqdefault.jpg',
+            refreshRemainingMs: 0,
         });
     });
 
@@ -203,8 +232,12 @@ describe('backend routes', () => {
 
         assert.equal(response.status, 200);
         const body = await response.json();
-        assert.equal(typeof body.refreshAvailableAt, 'string');
-        assert.equal(savedLink.refreshAvailableAt?.getTime(), Date.parse(body.refreshAvailableAt));
+        assert.equal(body.refreshAvailableAt, undefined);
+        assert.ok(body.refreshRemainingMs > 0);
+        assert.ok(body.refreshRemainingMs <= 5 * 60 * 1000);
+        assert.ok(savedLink.refreshAvailableAt instanceof Date);
+        assert.ok(savedLink.refreshAvailableAt.getTime() > Date.now());
+        assert.ok(savedLink.refreshAvailableAt.getTime() - Date.now() <= 5 * 60 * 1000);
     });
 
     it('rejects a refresh while the server-side cooldown is active', async (t) => {
@@ -222,7 +255,6 @@ describe('backend routes', () => {
         assert.equal(response.headers.get('Retry-After'), '60');
         assert.deepEqual(await response.json(), {
             error: 'Refresh cooldown active',
-            refreshAvailableAt: refreshAvailableAt.toISOString(),
         });
     });
 

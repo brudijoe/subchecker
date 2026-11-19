@@ -92,8 +92,8 @@ export interface components {
             englishSubtitles: boolean | null;
             /** Format: date-time */
             subtitleCheckedAt: string | null;
-            /** Format: date-time */
-            refreshAvailableAt: string | null;
+            /** @description Remaining refresh cooldown in milliseconds, calculated by the server. */
+            refreshRemainingMs: number;
             /** Format: date-time */
             notifiedAt: string | null;
             /** Format: date-time */
@@ -101,11 +101,6 @@ export interface components {
         };
         ApiError: {
             error: string;
-        };
-        RefreshCooldownError: {
-            error: string;
-            /** Format: date-time */
-            refreshAvailableAt: string;
         };
         Health: {
             /** @enum {string} */
@@ -203,13 +198,15 @@ export interface operations {
                     "application/json": components["schemas"]["ApiError"];
                 };
             };
-            /** Refresh cooldown is active */
+            /** @description Refresh cooldown is active */
             429: {
                 headers: {
+                    /** @description Seconds until the refresh cooldown expires. */
+                    "Retry-After"?: number;
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["RefreshCooldownError"];
+                    "application/json": components["schemas"]["ApiError"];
                 };
             };
         };

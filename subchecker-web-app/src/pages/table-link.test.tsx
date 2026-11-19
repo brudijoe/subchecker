@@ -26,7 +26,7 @@ const firstLink: LinkDto = {
     channelName: null,
     englishSubtitles: true,
     subtitleCheckedAt: null,
-    refreshAvailableAt: null,
+    refreshRemainingMs: 0,
     notifiedAt: null,
     createdAt: "2026-01-01T00:00:00.000Z",
 }
@@ -39,7 +39,7 @@ const secondLink: LinkDto = {
     channelName: null,
     englishSubtitles: null,
     subtitleCheckedAt: null,
-    refreshAvailableAt: null,
+    refreshRemainingMs: 0,
     notifiedAt: null,
     createdAt: "2026-01-01T00:00:00.000Z",
 }
@@ -136,7 +136,7 @@ describe("TableLink", () => {
             channelName: null,
             englishSubtitles: true,
             subtitleCheckedAt: null,
-            refreshAvailableAt: null,
+            refreshRemainingMs: 0,
             notifiedAt: null,
             createdAt: "2026-01-01T00:00:00.000Z",
         }
@@ -250,7 +250,7 @@ describe("TableLink", () => {
         render(<TableLink />)
 
         const rows = screen.getAllByRole("row")
-        expect(within(rows[1]).getByRole("button", { name: "Refresh link" })).toBeDisabled()
+        expect(within(rows[1]).getByRole("button", { name: "Refreshing link" })).toBeDisabled()
         expect(within(rows[2]).getByRole("button", { name: "Refresh link" })).toBeEnabled()
     })
 

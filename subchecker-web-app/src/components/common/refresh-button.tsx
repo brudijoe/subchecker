@@ -3,12 +3,11 @@ import { useEffect, useState } from "react"
 
 import { Button } from "@/components/ui/button"
 
-const COOLDOWN_MS = 5 * 60 * 1000
-
 type RefreshButtonProps = {
     disabled?: boolean
     hasEnglishSubtitles: boolean
-    refreshAvailableAt?: string | null
+    isRefreshing?: boolean
+    refreshRemainingMs?: number
     onRefresh: () => void
 }
 
@@ -22,31 +21,43 @@ function formatTime(seconds: number) {
 export function RefreshButton({
     disabled = false,
     hasEnglishSubtitles,
-    refreshAvailableAt = null,
+    isRefreshing = false,
+    refreshRemainingMs = 0,
     onRefresh,
 }: RefreshButtonProps) {
-    const [optimisticCooldownUntil, setOptimisticCooldownUntil] = useState<number | null>(null)
-    const [now, setNow] = useState(() => Date.now())
-    const serverCooldownUntil = refreshAvailableAt ? Date.parse(refreshAvailableAt) : 0
-    const cooldownUntil = Math.max(serverCooldownUntil, optimisticCooldownUntil ?? 0)
-    const remainingSeconds = Math.max(0, Math.ceil((cooldownUntil - now) / 1000))
+    const [clock, setClock] = useState(() => {
+        const now = Date.now()
+        return {
+            now,
+            serverCooldownUntil: refreshRemainingMs > 0 ? now + refreshRemainingMs : 0,
+        }
+    })
+
+    const cooldownUntil = clock.serverCooldownUntil
+    const remainingSeconds = Math.max(0, Math.ceil((cooldownUntil - clock.now) / 1000))
     const timeLabel = formatTime(remainingSeconds)
+    let buttonLabel = "Refresh link"
+    let buttonTitle = "Refresh link"
+
+    if (isRefreshing) {
+        buttonLabel = "Refreshing link"
+        buttonTitle = "Checking link"
+    } else if (remainingSeconds > 0) {
+        buttonLabel = `Refresh link. Available in ${timeLabel}`
+        buttonTitle = `Refresh available in ${timeLabel}`
+    }
 
     useEffect(() => {
-        if (cooldownUntil <= now) return
+        if (cooldownUntil <= clock.now) return
 
         const intervalId = window.setInterval(() => {
-            setNow(Date.now())
+            setClock(current => ({ ...current, now: Date.now() }))
         }, 1000)
 
         return () => window.clearInterval(intervalId)
-    }, [cooldownUntil, now])
+    }, [cooldownUntil, clock.now])
 
     function handleRefresh() {
-        const currentTime = Date.now()
-        // Refresh the displayed clock immediately instead of waiting for the first timeout.
-        setNow(currentTime)
-        setOptimisticCooldownUntil(currentTime + COOLDOWN_MS)
         onRefresh()
     }
 
@@ -54,19 +65,18 @@ export function RefreshButton({
         <Button
             variant="ghost"
             size="sm"
-            aria-label={remainingSeconds > 0
-                ? `Refresh link. Available in ${timeLabel}`
-                : "Refresh link"}
-            title={remainingSeconds > 0 ? `Refresh available in ${timeLabel}` : "Refresh link"}
-            disabled={disabled || remainingSeconds > 0}
+            aria-label={buttonLabel}
+            title={buttonTitle}
+            disabled={disabled || isRefreshing || remainingSeconds > 0}
             onClick={handleRefresh}
         >
-            {remainingSeconds === 0 && (
+            {isRefreshing && <RefreshCw className="size-4 animate-spin" />}
+            {!isRefreshing && remainingSeconds === 0 && (
                 hasEnglishSubtitles
                     ? <RefreshCwOff className="size-4" />
                     : <RefreshCw className={`size-4 ${disabled ? "animate-spin" : ""}`} />
             )}
-            {remainingSeconds > 0 && <span>{timeLabel}</span>}
+            {!isRefreshing && remainingSeconds > 0 && <span>{timeLabel}</span>}
         </Button>
     )
 }

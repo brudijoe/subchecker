@@ -52,10 +52,15 @@ paths:
                 $ref: "#/components/schemas/ApiError"
         "429":
           description: Refresh cooldown is active
+          headers:
+            Retry-After:
+              description: Seconds until the refresh cooldown expires.
+              schema:
+                type: integer
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/RefreshCooldownError"
+                $ref: "#/components/schemas/ApiError"
   /links/{id}:
     delete:
       operationId: deleteLink
@@ -117,7 +122,7 @@ components:
         - channelName
         - englishSubtitles
         - subtitleCheckedAt
-        - refreshAvailableAt
+        - refreshRemainingMs
         - notifiedAt
         - createdAt
       properties:
@@ -141,10 +146,10 @@ components:
           type: string
           format: date-time
           nullable: true
-        refreshAvailableAt:
-          type: string
-          format: date-time
-          nullable: true
+        refreshRemainingMs:
+          type: integer
+          minimum: 0
+          description: Remaining refresh cooldown in milliseconds, calculated by the server.
         notifiedAt:
           type: string
           format: date-time
@@ -159,17 +164,6 @@ components:
       properties:
         error:
           type: string
-    RefreshCooldownError:
-      type: object
-      required:
-        - error
-        - refreshAvailableAt
-      properties:
-        error:
-          type: string
-        refreshAvailableAt:
-          type: string
-          format: date-time
     Health:
       type: object
       required:

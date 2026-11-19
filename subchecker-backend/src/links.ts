@@ -8,8 +8,18 @@ import { getYouTubeThumbnailUrl } from './lib/youtube.js';
 const app = new Hono();
 const REFRESH_COOLDOWN_MS = 5 * 60 * 1000;
 
-function addThumbnailUrl<T extends { url: string }>(link: T) {
-    return { ...link, thumbnailUrl: getYouTubeThumbnailUrl(link.url) };
+function addLinkResponseFields<T extends { url: string; refreshAvailableAt?: Date | null }>(link: T) {
+    const { refreshAvailableAt, ...linkData } = link;
+    const refreshRemainingMs = Math.max(
+        0,
+        (refreshAvailableAt?.getTime() ?? 0) - Date.now(),
+    );
+
+    return {
+        ...linkData,
+        thumbnailUrl: getYouTubeThumbnailUrl(link.url),
+        refreshRemainingMs,
+    };
 }
 
 // Return all links saved in PostgreSQL.
@@ -20,7 +30,7 @@ app.get('/', async (context) => {
         .orderBy(asc(linksTable.id))
         .limit(100);
 
-    return context.json({ links: links.map(addThumbnailUrl) });
+    return context.json({ links: links.map(addLinkResponseFields) });
 });
 
 // Add links to PostgreSQL.
@@ -33,10 +43,10 @@ app.post('/', async (context) => {
         .returning();
 
     try {
-        return context.json(addThumbnailUrl(await checkLink(link.id) ?? link), 201);
+        return context.json(addLinkResponseFields(await checkLink(link.id) ?? link), 201);
     } catch (error) {
         console.error(`Could not check new link ${link.id}:`, error);
-        return context.json(addThumbnailUrl(link), 201);
+        return context.json(addLinkResponseFields(link), 201);
     }
 });
 
@@ -74,13 +84,12 @@ app.post('/:id/check', async (context) => {
         context.header('Retry-After', String(retryAfter));
         return context.json({
             error: 'Refresh cooldown active',
-            refreshAvailableAt: availableAt.toISOString(),
         }, 429);
     }
 
     const link = await checkLink(id);
     if (!link) return context.json({ error: 'Link not found' }, 404);
-    return context.json(addThumbnailUrl(link));
+    return context.json(addLinkResponseFields(link));
 });
 
 // Remove one link by its database ID.

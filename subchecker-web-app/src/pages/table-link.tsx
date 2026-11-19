@@ -183,9 +183,11 @@ function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkR
             {/* Refresh */}
             <TableCell className="w-[120px] text-center">
                 <RefreshButton
+                    key={`${link.id}-${link.refreshRemainingMs}`}
                     disabled={isChecking || link.englishSubtitles === true}
                     hasEnglishSubtitles={link.englishSubtitles === true}
-                    refreshAvailableAt={link.refreshAvailableAt}
+                    isRefreshing={isChecking}
+                    refreshRemainingMs={link.refreshRemainingMs}
                     onRefresh={onCheck}
                 />
             </TableCell>
