@@ -9,12 +9,12 @@ paths:
       operationId: getLinks
       summary: Get saved links
       responses:
-        '200':
+        "200":
           description: Saved links
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LinkList'
+                $ref: "#/components/schemas/LinkList"
     post:
       operationId: createLink
       summary: Save a video link
@@ -23,65 +23,65 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/CreateLinkRequest'
+              $ref: "#/components/schemas/CreateLinkRequest"
       responses:
-        '201':
+        "201":
           description: Saved link
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Link'
+                $ref: "#/components/schemas/Link"
   /links/{id}/check:
     post:
       operationId: checkLink
       summary: Check subtitles for a saved link
       parameters:
-        - $ref: '#/components/parameters/LinkId'
+        - $ref: "#/components/parameters/LinkId"
       responses:
-        '200':
+        "200":
           description: Updated link
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Link'
-        '404':
+                $ref: "#/components/schemas/Link"
+        "404":
           description: Link not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ApiError'
-        '429':
+                $ref: "#/components/schemas/ApiError"
+        "429":
           description: Refresh cooldown is active
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/RefreshCooldownError'
+                $ref: "#/components/schemas/RefreshCooldownError"
   /links/{id}:
     delete:
       operationId: deleteLink
       summary: Delete a saved link
       parameters:
-        - $ref: '#/components/parameters/LinkId'
+        - $ref: "#/components/parameters/LinkId"
       responses:
-        '204':
+        "204":
           description: Link deleted
   /health:
     get:
       operationId: getHealth
       summary: Check API and database health
       responses:
-        '200':
+        "200":
           description: API and database are operational
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Health'
-        '503':
+                $ref: "#/components/schemas/Health"
+        "503":
           description: Database is unavailable
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Health'
+                $ref: "#/components/schemas/Health"
 components:
   parameters:
     LinkId:
@@ -106,7 +106,7 @@ components:
         links:
           type: array
           items:
-            $ref: '#/components/schemas/Link'
+            $ref: "#/components/schemas/Link"
     Link:
       type: object
       required:
