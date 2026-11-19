@@ -19,7 +19,7 @@ describe('ntfy notifications', () => {
         });
 
         let request: RequestInit | undefined;
-        t.mock.method(globalThis, 'fetch', async (_input, init) => {
+        t.mock.method(globalThis, 'fetch', async (_input: RequestInfo | URL, init?: RequestInit) => {
             request = init;
             return new Response(null, { status: 200 });
         });
