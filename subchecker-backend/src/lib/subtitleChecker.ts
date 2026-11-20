@@ -33,7 +33,11 @@ export async function checkLink(id: number) {
     // Notify only if subtitles are available and no notification was sent before
     if (info.hasEnglishSubtitles && !link.notifiedAt) {
         try {
-            await sendNotification({ title: info.title, url: link.url });
+            await sendNotification({
+                title: info.title,
+                channelName: info.channelName,
+                url: link.url,
+            });
             const [notifiedLink] = await db
                 .update(linksTable)
                 .set({ notifiedAt: new Date() })

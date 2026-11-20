@@ -26,12 +26,16 @@ describe('ntfy notifications', () => {
 
         await sendNotification({
             title: 'Video title',
+            channelName: 'Example Channel',
             url: 'https://www.youtube.com/watch?v=wfaL-baiNUo',
         });
 
         const headers = new Headers(request?.headers);
         assert.equal(headers.has('Click'), false);
-        assert.equal(request?.body, 'Video title\nhttps://www.youtube.com/watch?v=wfaL-baiNUo');
+        assert.equal(
+            request?.body,
+            'Example Channel\nVideo title\nhttps://www.youtube.com/watch?v=wfaL-baiNUo',
+        );
     });
 });
 
