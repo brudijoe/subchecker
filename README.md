@@ -54,6 +54,16 @@ updates are proposed separately so they can be reviewed and tested individually.
 Where available, Dependabot pull requests include links to release notes and
 changelogs.
 
+Peer requirements on packages declared directly in the root, backend, and
+frontend manifests are listed in
+[PEER_DEPENDENCIES.md](./PEER_DEPENDENCIES.md), grouped by the direct dependency
+tree that introduces them. The report includes paths for transitive requirements.
+Regenerate it from the repository root after changing dependencies or lockfiles:
+
+```powershell
+npm run deps:peers
+```
+
 ## OpenAPI types
 
 The backend API contract is defined in `subchecker-backend/openapi.yaml`.
