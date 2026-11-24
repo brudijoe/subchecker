@@ -176,6 +176,30 @@ describe('backend routes', () => {
         });
     });
 
+    it('rejects a link that has already been saved', async (t) => {
+        t.mock.method(db, 'select', () => ({
+            from: () => ({
+                where: () => ({
+                    limit: async () => [{ id: 7 }],
+                }),
+            }),
+        }));
+        t.mock.method(db, 'insert', () => {
+            throw new Error('A duplicate link should not be inserted');
+        });
+
+        const response = await app.request('/links', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: 'https://www.youtube.com/watch?v=UrCE_7e29HI' }),
+        });
+
+        assert.equal(response.status, 409);
+        assert.deepEqual(await response.json(), {
+            error: 'This link has already been added.',
+        });
+    });
+
     it('includes the thumbnail when the initial check fails', async (t) => {
         const savedLink = {
             id: 8,
@@ -185,7 +209,15 @@ describe('backend routes', () => {
         t.mock.method(db, 'insert', () => ({
             values: () => ({ returning: async () => [savedLink] }),
         }));
+        let selectCount = 0;
         t.mock.method(db, 'select', () => {
+            if (selectCount++ === 0) {
+                return {
+                    from: () => ({
+                        where: () => ({ limit: async () => [] }),
+                    }),
+                };
+            }
             throw new Error('check failed');
         });
         t.mock.method(console, 'error', () => undefined);

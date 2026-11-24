@@ -31,6 +31,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Link"
+        "409":
+          description: The link has already been added
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
   /links/{id}/check:
     post:
       operationId: checkLink

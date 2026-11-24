@@ -36,6 +36,15 @@ app.get('/', async (context) => {
 // Add links to PostgreSQL.
 app.post('/', async (context) => {
     const body = await context.req.json<{ url: string }>();
+    const [existingLink] = await db
+        .select({ id: linksTable.id })
+        .from(linksTable)
+        .where(eq(linksTable.url, body.url))
+        .limit(1);
+
+    if (existingLink) {
+        return context.json({ error: 'This link has already been added.' }, 409);
+    }
 
     const [link] = await db
         .insert(linksTable)

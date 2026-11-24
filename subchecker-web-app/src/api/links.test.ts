@@ -38,6 +38,15 @@ describe("links API", () => {
         })
     })
 
+    it("shows the API error when the link already exists", async () => {
+        vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
+            Response.json({ error: "This link has already been added." }, { status: 409 }),
+        ))
+
+        await expect(createLink("https://youtube.com/watch?v=abc"))
+            .rejects.toThrow("This link has already been added.")
+    })
+
     it("deletes a link by id", async () => {
         const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 204 }))
         vi.stubGlobal("fetch", fetchMock)

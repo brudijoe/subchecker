@@ -19,6 +19,11 @@ export async function createLink(url: string): Promise<LinkDto> {
     });
 
     if (!response.ok) {
+        if (response.status === 409) {
+            const result = await response.json() as { error: string };
+            throw new Error(result.error);
+        }
+
         throw new Error(`Failed to create link (${response.status})`);
     }
 
