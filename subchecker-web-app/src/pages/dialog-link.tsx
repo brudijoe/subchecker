@@ -60,7 +60,8 @@ export function DialogLink() {
                                 <Input
                                     id="link"
                                     name="link"
-                                    type="url"
+                                    type="text"
+                                    inputMode="url"
                                     className="h-11 bg-background/60 pl-10"
                                     placeholder="https://www.youtube.com/watch?v=..."
                                     required

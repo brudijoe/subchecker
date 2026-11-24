@@ -154,7 +154,11 @@ describe('backend routes', () => {
     });
 
     it('creates a link and returns it when checking finds no update', async (t) => {
-        const savedLink = { id: 7, url: 'https://example.com/video', channelName: null };
+        const savedLink = {
+            id: 7,
+            url: 'https://www.youtube.com/watch?v=wfaL-baiNUo',
+            channelName: null,
+        };
         t.mock.method(db, 'insert', () => ({
             values: () => ({ returning: async () => [savedLink] }),
         }));
@@ -171,9 +175,52 @@ describe('backend routes', () => {
         assert.equal(response.status, 201);
         assert.deepEqual(await response.json(), {
             ...savedLink,
-            thumbnailUrl: null,
+            thumbnailUrl: 'https://i.ytimg.com/vi/wfaL-baiNUo/hqdefault.jpg',
             refreshRemainingMs: 0,
         });
+    });
+
+    it('rejects an invalid YouTube URL without inserting it', async (t) => {
+        t.mock.method(db, 'insert', () => {
+            throw new Error('An invalid URL should not be inserted');
+        });
+
+        const response = await app.request('/links', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: '    \r\nhttps://www.yo' }),
+        });
+
+        assert.equal(response.status, 400);
+        assert.deepEqual(await response.json(), {
+            error: 'Please provide a valid YouTube video URL.',
+        });
+    });
+
+    it('trims a valid YouTube URL before saving it', async (t) => {
+        const url = 'https://www.youtube.com/watch?v=wfaL-baiNUo';
+        let insertedUrl: string | undefined;
+        const savedLink = { id: 7, url, channelName: null };
+        t.mock.method(db, 'select', () => ({
+            from: () => ({
+                where: () => ({ limit: async () => [] }),
+            }),
+        }));
+        t.mock.method(db, 'insert', () => ({
+            values: (values: { url: string }) => {
+                insertedUrl = values.url;
+                return { returning: async () => [savedLink] };
+            },
+        }));
+
+        const response = await app.request('/links', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ url: `  ${url}  ` }),
+        });
+
+        assert.equal(response.status, 201);
+        assert.equal(insertedUrl, url);
     });
 
     it('rejects a link that has already been saved', async (t) => {

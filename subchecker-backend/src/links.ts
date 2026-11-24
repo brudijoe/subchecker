@@ -3,7 +3,7 @@ import { and, asc, eq, isNull, lte, or } from 'drizzle-orm';
 import { db } from './db/index.js';
 import { linksTable } from './db/schema.js';
 import { checkLink } from './lib/subtitleChecker.js';
-import { getYouTubeThumbnailUrl } from './lib/youtube.js';
+import { getYouTubeThumbnailUrl, getYouTubeVideoId } from './lib/youtube.js';
 
 const app = new Hono();
 const REFRESH_COOLDOWN_MS = 5 * 60 * 1000;
@@ -35,11 +35,20 @@ app.get('/', async (context) => {
 
 // Add links to PostgreSQL.
 app.post('/', async (context) => {
-    const body = await context.req.json<{ url: string }>();
+    const body = await context.req.json<{ url?: unknown }>();
+    if (!body || typeof body !== 'object' || typeof body.url !== 'string') {
+        return context.json({ error: 'Please provide a valid YouTube video URL.' }, 400);
+    }
+
+    const url = body.url.trim();
+    if (!getYouTubeVideoId(url)) {
+        return context.json({ error: 'Please provide a valid YouTube video URL.' }, 400);
+    }
+
     const [existingLink] = await db
         .select({ id: linksTable.id })
         .from(linksTable)
-        .where(eq(linksTable.url, body.url))
+        .where(eq(linksTable.url, url))
         .limit(1);
 
     if (existingLink) {
@@ -48,7 +57,7 @@ app.post('/', async (context) => {
 
     const [link] = await db
         .insert(linksTable)
-        .values({ url: body.url })
+        .values({ url })
         .returning();
 
     try {

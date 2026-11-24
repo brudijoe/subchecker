@@ -31,6 +31,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Link"
+        "400":
+          description: The URL is not a valid YouTube video link
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
         "409":
           description: The link has already been added
           content:

@@ -47,6 +47,15 @@ describe("links API", () => {
             .rejects.toThrow("This link has already been added.")
     })
 
+    it("shows the API validation error for an invalid YouTube URL", async () => {
+        vi.stubGlobal("fetch", vi.fn().mockResolvedValue(
+            Response.json({ error: "Please provide a valid YouTube video URL." }, { status: 400 }),
+        ))
+
+        await expect(createLink("https://www.yo"))
+            .rejects.toThrow("Please provide a valid YouTube video URL.")
+    })
+
     it("deletes a link by id", async () => {
         const fetchMock = vi.fn().mockResolvedValue(new Response(null, { status: 204 }))
         vi.stubGlobal("fetch", fetchMock)
