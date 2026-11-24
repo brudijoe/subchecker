@@ -9,7 +9,7 @@
     "openapi:types": "openapi-typescript subchecker-backend/openapi.yaml -o subchecker-web-app/src/api/generated/openapi.d.ts"
   },
   "devDependencies": {
-    "openapi-typescript": "7.13.0",
-    "concurrently": "^9.2.1"
+    "concurrently": "^10.0.7",
+    "openapi-typescript": "7.13.0"
   }
 }
