@@ -18,7 +18,7 @@ Regenerate after dependency or lockfile changes with `npm run deps:peers`.
 
 
 
-### `concurrently@9.2.5` (`devDependencies`: `^9.2.1`)
+### `concurrently@10.0.7` (`devDependencies`: `^10.0.7`)
 
 No peer dependencies declared in this dependency tree.
 
@@ -115,12 +115,12 @@ No peer dependencies declared in this dependency tree.
 | --- | --- | --- |
 | `@tailwindcss/vite@4.3.5` | `vite`: `^5.2.0 \|\| ^6 \|\| ^7 \|\| ^8` | `@tailwindcss/vite@4.3.5` |
 
-### `@tanstack/react-query@5.108.3` (`dependencies`: `^5.108.3`)
+### `@tanstack/react-query@5.108.4` (`dependencies`: `^5.108.4`)
 
 | Package in dependency tree | Peer requirement | Dependency path from direct package |
 | --- | --- | --- |
-| `@tanstack/react-query@5.108.3` | `@types/react`: `^18 \|\| ^19` (optional) | `@tanstack/react-query@5.108.3` |
-| `@tanstack/react-query@5.108.3` | `react`: `^18 \|\| ^19` | `@tanstack/react-query@5.108.3` |
+| `@tanstack/react-query@5.108.4` | `@types/react`: `^18 \|\| ^19` (optional) | `@tanstack/react-query@5.108.4` |
+| `@tanstack/react-query@5.108.4` | `react`: `^18 \|\| ^19` | `@tanstack/react-query@5.108.4` |
 
 ### `@tanstack/react-store@0.11.4` (`dependencies`: `^0.11.4`)
 
@@ -139,12 +139,12 @@ No peer dependencies declared in this dependency tree.
 
 No peer dependencies declared in this dependency tree.
 
-### `lucide-react@1.78.0` (`dependencies`: `^1.78.0`)
+### `lucide-react@1.79.0` (`dependencies`: `^1.79.0`)
 
 | Package in dependency tree | Peer requirement | Dependency path from direct package |
 | --- | --- | --- |
-| `lucide-react@1.78.0` | `@types/react`: `*` (optional) | `lucide-react@1.78.0` |
-| `lucide-react@1.78.0` | `react`: `^16.5.1 \|\| ^17.0.0 \|\| ^18.0.0 \|\| ^19.0.0` | `lucide-react@1.78.0` |
+| `lucide-react@1.79.0` | `@types/react`: `*` (optional) | `lucide-react@1.79.0` |
+| `lucide-react@1.79.0` | `react`: `^16.5.1 \|\| ^17.0.0 \|\| ^18.0.0 \|\| ^19.0.0` | `lucide-react@1.79.0` |
 
 ### `react@19.3.1` (`dependencies`: `^19.2.8`)
 
@@ -172,24 +172,24 @@ No peer dependencies declared in this dependency tree.
 
 
 
-### `@tanstack/eslint-plugin-query@5.108.3` (`devDependencies`: `^5.108.3`)
+### `@tanstack/eslint-plugin-query@5.108.4` (`devDependencies`: `^5.108.4`)
 
 | Package in dependency tree | Peer requirement | Dependency path from direct package |
 | --- | --- | --- |
-| `@tanstack/eslint-plugin-query@5.108.3` | `typescript`: `^5.6.0 \|\| ^6.0.0 \|\| ^7.0.0` (optional) | `@tanstack/eslint-plugin-query@5.108.3` |
-| `@typescript-eslint/utils@8.72.2` | `typescript`: `>=4.8.4 <6.1.0` | `@tanstack/eslint-plugin-query@5.108.3` -> `@typescript-eslint/utils@8.72.2` |
-| `@typescript-eslint/typescript-estree@8.72.2` | `typescript`: `>=4.8.4 <6.1.0` | `@tanstack/eslint-plugin-query@5.108.3` -> `@typescript-eslint/utils@8.72.2` -> `@typescript-eslint/typescript-estree@8.72.2` |
-| `@typescript-eslint/project-service@8.72.2` | `typescript`: `>=4.8.4 <6.1.0` | `@tanstack/eslint-plugin-query@5.108.3` -> `@typescript-eslint/utils@8.72.2` -> `@typescript-eslint/typescript-estree@8.72.2` -> `@typescript-eslint/project-service@8.72.2` |
-| `@typescript-eslint/tsconfig-utils@8.72.2` | `typescript`: `>=4.8.4 <6.1.0` | `@tanstack/eslint-plugin-query@5.108.3` -> `@typescript-eslint/utils@8.72.2` -> `@typescript-eslint/typescript-estree@8.72.2` -> `@typescript-eslint/tsconfig-utils@8.72.2` |
-| `ts-api-utils@2.5.0` | `typescript`: `>=4.8.4` | `@tanstack/eslint-plugin-query@5.108.3` -> `@typescript-eslint/utils@8.72.2` -> `@typescript-eslint/typescript-estree@8.72.2` -> `ts-api-utils@2.5.0` |
+| `@tanstack/eslint-plugin-query@5.108.4` | `typescript`: `^5.6.0 \|\| ^6.0.0 \|\| ^7.0.0` (optional) | `@tanstack/eslint-plugin-query@5.108.4` |
+| `@typescript-eslint/utils@8.72.2` | `typescript`: `>=4.8.4 <6.1.0` | `@tanstack/eslint-plugin-query@5.108.4` -> `@typescript-eslint/utils@8.72.2` |
+| `@typescript-eslint/typescript-estree@8.72.2` | `typescript`: `>=4.8.4 <6.1.0` | `@tanstack/eslint-plugin-query@5.108.4` -> `@typescript-eslint/utils@8.72.2` -> `@typescript-eslint/typescript-estree@8.72.2` |
+| `@typescript-eslint/project-service@8.72.2` | `typescript`: `>=4.8.4 <6.1.0` | `@tanstack/eslint-plugin-query@5.108.4` -> `@typescript-eslint/utils@8.72.2` -> `@typescript-eslint/typescript-estree@8.72.2` -> `@typescript-eslint/project-service@8.72.2` |
+| `@typescript-eslint/tsconfig-utils@8.72.2` | `typescript`: `>=4.8.4 <6.1.0` | `@tanstack/eslint-plugin-query@5.108.4` -> `@typescript-eslint/utils@8.72.2` -> `@typescript-eslint/typescript-estree@8.72.2` -> `@typescript-eslint/tsconfig-utils@8.72.2` |
+| `ts-api-utils@2.5.0` | `typescript`: `>=4.8.4` | `@tanstack/eslint-plugin-query@5.108.4` -> `@typescript-eslint/utils@8.72.2` -> `@typescript-eslint/typescript-estree@8.72.2` -> `ts-api-utils@2.5.0` |
 
-### `@tanstack/react-query-devtools@5.108.3` (`devDependencies`: `^5.108.3`)
+### `@tanstack/react-query-devtools@5.108.4` (`devDependencies`: `^5.108.4`)
 
 | Package in dependency tree | Peer requirement | Dependency path from direct package |
 | --- | --- | --- |
-| `@tanstack/react-query-devtools@5.108.3` | `@tanstack/react-query`: `^5.108.3` | `@tanstack/react-query-devtools@5.108.3` |
-| `@tanstack/react-query-devtools@5.108.3` | `@types/react`: `^18 \|\| ^19` (optional) | `@tanstack/react-query-devtools@5.108.3` |
-| `@tanstack/react-query-devtools@5.108.3` | `react`: `^18 \|\| ^19` | `@tanstack/react-query-devtools@5.108.3` |
+| `@tanstack/react-query-devtools@5.108.4` | `@tanstack/react-query`: `^5.108.4` | `@tanstack/react-query-devtools@5.108.4` |
+| `@tanstack/react-query-devtools@5.108.4` | `@types/react`: `^18 \|\| ^19` (optional) | `@tanstack/react-query-devtools@5.108.4` |
+| `@tanstack/react-query-devtools@5.108.4` | `react`: `^18 \|\| ^19` | `@tanstack/react-query-devtools@5.108.4` |
 
 ### `@testing-library/jest-dom@7.0.1` (`devDependencies`: `^7.0.1`)
 
@@ -234,7 +234,7 @@ No peer dependencies declared in this dependency tree.
 
 No peer dependencies declared in this dependency tree.
 
-### `oxlint@1.94.0` (`devDependencies`: `^1.94.0`)
+### `oxlint@1.95.0` (`devDependencies`: `^1.95.0`)
 
 No peer dependencies declared in this dependency tree.
 
