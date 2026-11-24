@@ -36,7 +36,7 @@ function getStatusTitle(isChecking: boolean, isOperational: boolean, isError: bo
 
 function getStatusDescription(isChecking: boolean, isOperational: boolean, isError: boolean) {
     if (isChecking) return "Please wait while we verify the connection."
-    if (isOperational) return "The backend API and PostgreSQL are online."
+    if (isOperational) return "The backend API and database are online."
     if (isError) return "Unable to retrieve the system status. Check your backend connection."
     return "One or more systems are unavailable. Please try again."
 }
@@ -214,7 +214,7 @@ export function SystemStatus() {
                                 aria-hidden="true"
                             />
                             <div className="min-w-0">
-                                <p className="text-xs text-muted-foreground">PostgreSQL</p>
+                                <p className="text-xs text-muted-foreground">Database</p>
                                 <p className="flex items-center gap-1.5 text-sm font-medium">
                                     {getDatabaseStatus(health, isChecking)}
                                 </p>
