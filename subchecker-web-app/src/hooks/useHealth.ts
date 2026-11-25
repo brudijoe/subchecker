@@ -43,7 +43,10 @@ export function useHealth(enabled = true) {
         query.data.checks.database === "ok"
 
     return {
-        ...query,
+        data: query.data,
+        isPending: query.isPending,
+        isFetching: query.isFetching,
+        isError: query.isError,
         isOperational,
         checks: query.data?.checks,
     }
