@@ -1,6 +1,7 @@
 import path from "path"
 import tailwindcss from "@tailwindcss/vite"
 import react from "@vitejs/plugin-react"
+import { playwright } from "@vitest/browser-playwright"
 import { defineConfig } from "vitest/config"
 
 // https://vite.dev/config/
@@ -24,7 +25,12 @@ export default defineConfig({
     },
   },
   test: {
-    environment: "jsdom",
+    browser: {
+      enabled: true,
+      provider: playwright(),
+      headless: true,
+      instances: [{ browser: "chromium" }],
+    },
     setupFiles: ["./src/testing/setup.ts"],
     clearMocks: true,
   },

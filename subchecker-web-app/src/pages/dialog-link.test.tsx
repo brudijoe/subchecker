@@ -1,4 +1,4 @@
-import { act, render, screen } from "@testing-library/react"
+import { act, render, screen, waitFor } from "@testing-library/react"
 import userEvent from "@testing-library/user-event"
 import { beforeEach, describe, expect, it, vi } from "vitest"
 import { DialogLink } from "./dialog-link"
@@ -36,7 +36,7 @@ describe("DialogLink", () => {
 
         const options = mocks.mutate.mock.calls[0][1] as { onSuccess: () => void }
         act(() => options.onSuccess())
-        expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
+        await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument())
 
         await user.click(screen.getByRole("button", { name: "Add link" }))
         expect(screen.getByLabelText("YouTube URL")).toHaveValue("")

@@ -112,7 +112,7 @@ flowchart LR
         subgraph WebDev["Development and test dependencies"]
             TSWeb["typescript · @types/node · @types/react · @types/react-dom"]
             Vite["vite · @vitejs/plugin-react"]
-            Tests["vitest · jsdom · @testing-library/*"]
+            Tests["vitest · @vitest/browser-playwright · playwright · @testing-library/*"]
             Lint["oxlint · @tanstack/eslint-plugin-query"]
             QueryTools["@tanstack/react-query-devtools"]
         end

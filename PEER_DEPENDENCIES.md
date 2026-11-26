@@ -50,7 +50,7 @@ No peer dependencies declared in this dependency tree.
 | `drizzle-orm@1.0.0-rc.5-ab785fc` | `@types/pg`: `*` (optional) | `drizzle-orm@1.0.0-rc.5-ab785fc` |
 | `drizzle-orm@1.0.0-rc.5-ab785fc` | `pg`: `>=8` (optional) | `drizzle-orm@1.0.0-rc.5-ab785fc` |
 
-### `hono@4.13.21` (`dependencies`: `^4.13.21`)
+### `hono@4.13.22` (`dependencies`: `^4.13.22`)
 
 No peer dependencies declared in this dependency tree.
 
@@ -64,7 +64,7 @@ No peer dependencies declared in this dependency tree.
 
 
 
-### `@types/node@26.6.6` (`devDependencies`: `^26.6.6`)
+### `@types/node@26.6.10` (`devDependencies`: `^26.6.10`)
 
 No peer dependencies declared in this dependency tree.
 
@@ -135,28 +135,28 @@ No peer dependencies declared in this dependency tree.
 
 No peer dependencies declared in this dependency tree.
 
-### `cn@0.4.0` (`dependencies`: `^0.4.0`)
+### `cn@0.5.2` (`dependencies`: `^0.5.2`)
 
 No peer dependencies declared in this dependency tree.
 
-### `lucide-react@1.79.0` (`dependencies`: `^1.79.0`)
+### `lucide-react@1.81.0` (`dependencies`: `^1.81.0`)
 
 | Package in dependency tree | Peer requirement | Dependency path from direct package |
 | --- | --- | --- |
-| `lucide-react@1.79.0` | `@types/react`: `*` (optional) | `lucide-react@1.79.0` |
-| `lucide-react@1.79.0` | `react`: `^16.5.1 \|\| ^17.0.0 \|\| ^18.0.0 \|\| ^19.0.0` | `lucide-react@1.79.0` |
+| `lucide-react@1.81.0` | `@types/react`: `*` (optional) | `lucide-react@1.81.0` |
+| `lucide-react@1.81.0` | `react`: `^16.5.1 \|\| ^17.0.0 \|\| ^18.0.0 \|\| ^19.0.0` | `lucide-react@1.81.0` |
 
-### `react@19.3.1` (`dependencies`: `^19.2.8`)
+### `react@19.3.1` (`dependencies`: `^19.3.1`)
 
 No peer dependencies declared in this dependency tree.
 
-### `react-dom@19.3.1` (`dependencies`: `^19.2.8`)
+### `react-dom@19.3.1` (`dependencies`: `^19.3.1`)
 
 | Package in dependency tree | Peer requirement | Dependency path from direct package |
 | --- | --- | --- |
 | `react-dom@19.3.1` | `react`: `^19.3.1` | `react-dom@19.3.1` |
 
-### `shadcn@4.23.0` (`dependencies`: `^4.21.4`)
+### `shadcn@4.23.1` (`dependencies`: `^4.23.1`)
 
 No peer dependencies declared in this dependency tree.
 
@@ -210,15 +210,15 @@ No peer dependencies declared in this dependency tree.
 
 No peer dependencies declared in this dependency tree.
 
-### `@types/node@24.19.2` (`devDependencies`: `^24.13.3`)
+### `@types/node@24.19.4` (`devDependencies`: `^24.19.4`)
 
 No peer dependencies declared in this dependency tree.
 
-### `@types/react@19.3.0` (`devDependencies`: `^19.2.18`)
+### `@types/react@19.3.3` (`devDependencies`: `^19.3.3`)
 
 No peer dependencies declared in this dependency tree.
 
-### `@types/react-dom@19.3.0` (`devDependencies`: `^19.2.7`)
+### `@types/react-dom@19.3.0` (`devDependencies`: `^19.3.0`)
 
 | Package in dependency tree | Peer requirement | Dependency path from direct package |
 | --- | --- | --- |
@@ -230,11 +230,21 @@ No peer dependencies declared in this dependency tree.
 | --- | --- | --- |
 | `@vitejs/plugin-react@6.3.0` | `vite`: `^8.0.0` | `@vitejs/plugin-react@6.3.0` |
 
-### `jsdom@30.1.3` (`devDependencies`: `^30.1.3`)
+### `@vitest/browser-playwright@5.1.2` (`devDependencies`: `^5.1.2`)
+
+| Package in dependency tree | Peer requirement | Dependency path from direct package |
+| --- | --- | --- |
+| `@vitest/browser-playwright@5.1.2` | `playwright`: `*` | `@vitest/browser-playwright@5.1.2` |
+| `@vitest/browser-playwright@5.1.2` | `vitest`: `5.1.2` | `@vitest/browser-playwright@5.1.2` |
+| `@vitest/browser@5.1.2` | `vitest`: `5.1.2` | `@vitest/browser-playwright@5.1.2` -> `@vitest/browser@5.1.2` |
+| `@vitest/mocker@5.1.2` | `vite`: `^6.0.0 \|\| ^7.0.0 \|\| ^8.0.0` (optional) | `@vitest/browser-playwright@5.1.2` -> `@vitest/mocker@5.1.2` |
+| `@vitest/ui@5.1.2` | `vitest`: `5.1.2` | `@vitest/browser-playwright@5.1.2` -> `@vitest/browser@5.1.2` -> `@vitest/ui@5.1.2` |
+
+### `oxlint@1.95.0` (`devDependencies`: `^1.95.0`)
 
 No peer dependencies declared in this dependency tree.
 
-### `oxlint@1.95.0` (`devDependencies`: `^1.95.0`)
+### `playwright@1.65.1` (`devDependencies`: `^1.65.1`)
 
 No peer dependencies declared in this dependency tree.
 
@@ -248,11 +258,11 @@ No peer dependencies declared in this dependency tree.
 | --- | --- | --- |
 | `vite@8.3.8` | `@types/node`: `^20.19.0 \|\| >=22.12.0` (optional) | `vite@8.3.8` |
 
-### `vitest@5.1.1` (`devDependencies`: `^5.1.1`)
+### `vitest@5.1.2` (`devDependencies`: `^5.1.2`)
 
 | Package in dependency tree | Peer requirement | Dependency path from direct package |
 | --- | --- | --- |
-| `vitest@5.1.1` | `@types/node`: `^22.0.0 \|\| >=24.0.0` (optional) | `vitest@5.1.1` |
-| `vitest@5.1.1` | `jsdom`: `*` (optional) | `vitest@5.1.1` |
-| `vitest@5.1.1` | `vite`: `^6.4.0 \|\| ^7.0.0 \|\| ^8.0.0` | `vitest@5.1.1` |
-| `@vitest/mocker@5.1.1` | `vite`: `^6.0.0 \|\| ^7.0.0 \|\| ^8.0.0` (optional) | `vitest@5.1.1` -> `@vitest/mocker@5.1.1` |
+| `vitest@5.1.2` | `@types/node`: `^22.0.0 \|\| >=24.0.0` (optional) | `vitest@5.1.2` |
+| `vitest@5.1.2` | `@vitest/browser-playwright`: `5.1.2` (optional) | `vitest@5.1.2` |
+| `vitest@5.1.2` | `vite`: `^6.4.0 \|\| ^7.0.0 \|\| ^8.0.0` | `vitest@5.1.2` |
+| `@vitest/mocker@5.1.2` | `vite`: `^6.0.0 \|\| ^7.0.0 \|\| ^8.0.0` (optional) | `vitest@5.1.2` -> `@vitest/mocker@5.1.2` |

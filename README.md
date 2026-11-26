@@ -17,6 +17,21 @@ This starts the backend and frontend together. Press `Ctrl+C` to stop both.
 You can also start only one with `npm run dev:backend` or
 `npm run dev:frontend`.
 
+## Tests
+
+Run the backend and frontend test suites together from the repository root:
+
+```powershell
+npm test
+```
+
+The frontend tests run in headless Chromium using Vitest Browser Mode. Install
+the browser once after installing frontend dependencies:
+
+```powershell
+npm --prefix subchecker-web-app exec -- playwright install chromium
+```
+
 Before starting the backend for the first time, configure its `.env` and
 initialize the database as described in [subchecker-backend/README.md](./subchecker-backend/README.md):
 
