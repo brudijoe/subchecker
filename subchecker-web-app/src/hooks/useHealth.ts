@@ -49,5 +49,6 @@ export function useHealth(enabled = true) {
         isError: query.isError,
         isOperational,
         checks: query.data?.checks,
+        refetch: query.refetch,
     }
 }

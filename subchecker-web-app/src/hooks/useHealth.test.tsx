@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
-import { renderHook, waitFor } from "@testing-library/react"
+import { act, renderHook, waitFor } from "@testing-library/react"
 import type { PropsWithChildren } from "react"
 import { afterEach, describe, expect, it, vi } from "vitest"
 import { useHealth } from "./useHealth"
@@ -53,5 +53,30 @@ describe("useHealth", () => {
         await waitFor(() => expect(result.current.isError).toBe(true))
 
         expect(result.current.isOperational).toBe(false)
+    })
+
+    it("refetches health when requested", async () => {
+        const fetchMock = vi.fn()
+            .mockResolvedValueOnce(Response.json({
+                status: "operational",
+                checks: { api: "ok", database: "ok" },
+                timestamp: "2026-10-31T12:00:00.000Z",
+            }))
+            .mockResolvedValueOnce(Response.json({
+                status: "degraded",
+                checks: { api: "ok", database: "error" },
+                timestamp: "2026-10-31T12:05:00.000Z",
+            }))
+        vi.stubGlobal("fetch", fetchMock)
+
+        const { result } = renderHook(() => useHealth(), { wrapper: createWrapper() })
+        await waitFor(() => expect(result.current.data?.status).toBe("operational"))
+
+        await act(async () => {
+            await result.current.refetch()
+        })
+
+        expect(fetchMock).toHaveBeenCalledTimes(2)
+        expect(result.current.data?.status).toBe("degraded")
     })
 })
