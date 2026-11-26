@@ -5,6 +5,7 @@
     "dev": "concurrently --kill-others --names backend,frontend \"npm --prefix subchecker-backend run dev\" \"npm --prefix subchecker-web-app run dev\"",
     "dev:backend": "npm --prefix subchecker-backend run dev",
     "dev:frontend": "npm --prefix subchecker-web-app run dev",
+    "test": "concurrently --kill-others-on-fail --names backend,frontend \"npm --prefix subchecker-backend test\" \"npm --prefix subchecker-web-app run test:run\"",
     "deps:peers": "node scripts/update-peer-dependencies.mjs",
     "openapi:types": "openapi-typescript subchecker-backend/openapi.yaml -o subchecker-web-app/src/api/generated/openapi.d.ts"
   },
