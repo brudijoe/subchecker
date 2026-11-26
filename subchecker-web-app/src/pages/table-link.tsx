@@ -11,6 +11,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { CircleCheck, CircleX, Trash } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { LinkPreview } from "@/components/common/link-preview";
+import { MobileLinkCard } from "@/pages/mobile-link-card";
 import { RefreshButton } from "@/components/common/refresh-button";
 import { useCheckLink, useDeleteLink, useLinks } from "@/hooks/useLinks";
 import type { LinkRowProps } from "@/types/types";
@@ -203,35 +204,12 @@ function MessageRow({ children }: { children: ReactNode }) {
     );
 }
 
-function LinkRows() {
+export function TableLink() {
     const { data: links = [], isPending, isError } = useLinks();
     const checkMutation = useCheckLink();
     const deleteMutation = useDeleteLink();
 
-    if (isPending) return <TableLinkSkeletonRow />;
-    if (isError) return <MessageRow>The links could not be loaded.</MessageRow>;
-    if (links.length === 0) return <MessageRow>No links added yet.</MessageRow>;
-
-    return links
-        // Keep subtitle links first and use IDs for stable ordering.
-        .toSorted((leftLink, rightLink) =>
-            Number(rightLink.englishSubtitles === true) - Number(leftLink.englishSubtitles === true)
-            || leftLink.id - rightLink.id
-        )
-        .map((link) => (
-            <TableLinkRow
-                key={link.id}
-                link={link}
-                isChecking={checkMutation.isPending && checkMutation.variables === link.id}
-                isDeleting={deleteMutation.isPending}
-                onDelete={() => deleteMutation.mutate(link.id)}
-                onCheck={() => checkMutation.mutate(link.id)}
-            />
-        ))
-}
-
-export function TableLink() {
-    return (
+    const table = (children: ReactNode) => (
         <Table>
             <TableHeader>
                 <TableRow>
@@ -241,10 +219,64 @@ export function TableLink() {
                     <TableHead className="text-center">Refresh</TableHead>
                 </TableRow>
             </TableHeader>
-
-            <TableBody>
-                <LinkRows />
-            </TableBody>
+            <TableBody>{children}</TableBody>
         </Table>
+    );
+
+    if (isPending) {
+        return (
+            <>
+                <div className="space-y-3 md:hidden" aria-label="Loading links">
+                    <div className="h-28 animate-pulse rounded-xl bg-muted" />
+                    <div className="h-28 animate-pulse rounded-xl bg-muted" />
+                </div>
+                <div className="hidden md:block">{table(<TableLinkSkeletonRow />)}</div>
+            </>
+        );
+    }
+
+    if (isError || links.length === 0) {
+        const message = isError ? "The links could not be loaded." : "No links added yet.";
+        return (
+            <>
+                <div className="rounded-xl border p-4 text-sm md:hidden">{message}</div>
+                <div className="hidden md:block">{table(<MessageRow>{message}</MessageRow>)}</div>
+            </>
+        );
+    }
+
+    // Keep subtitle links first and use IDs for stable ordering.
+    const sortedLinks = links.toSorted((leftLink, rightLink) =>
+        Number(rightLink.englishSubtitles === true) - Number(leftLink.englishSubtitles === true)
+        || leftLink.id - rightLink.id
+    );
+
+    return (
+        <>
+            <div className="space-y-3 md:hidden">
+                {sortedLinks.map((link) => (
+                    <MobileLinkCard
+                        key={link.id}
+                        link={link}
+                        isChecking={checkMutation.isPending && checkMutation.variables === link.id}
+                        isDeleting={deleteMutation.isPending}
+                        onDelete={() => deleteMutation.mutate(link.id)}
+                        onCheck={() => checkMutation.mutate(link.id)}
+                    />
+                ))}
+            </div>
+            <div className="hidden md:block">
+                {table(sortedLinks.map((link) => (
+                    <TableLinkRow
+                        key={link.id}
+                        link={link}
+                        isChecking={checkMutation.isPending && checkMutation.variables === link.id}
+                        isDeleting={deleteMutation.isPending}
+                        onDelete={() => deleteMutation.mutate(link.id)}
+                        onCheck={() => checkMutation.mutate(link.id)}
+                    />
+                )))}
+            </div>
+        </>
     );
 }

@@ -69,13 +69,13 @@ describe("TableLink", () => {
 
         render(<TableLink />)
 
-        expect(screen.getByText("The links could not be loaded.")).toBeInTheDocument()
+        expect(within(screen.getByRole("table")).getByText("The links could not be loaded.")).toBeInTheDocument()
     })
 
     it("shows an empty state when no links exist", () => {
         render(<TableLink />)
 
-        expect(screen.getByText("No links added yet.")).toBeInTheDocument()
+        expect(within(screen.getByRole("table")).getByText("No links added yet.")).toBeInTheDocument()
     })
 
     it("renders titles and falls back to the URL", () => {
@@ -83,8 +83,9 @@ describe("TableLink", () => {
 
         render(<TableLink />)
 
-        expect(screen.getByRole("link", { name: "First video" })).toHaveAttribute("href", firstLink.url)
-        expect(screen.getByRole("link", { name: secondLink.url })).toHaveAttribute("href", secondLink.url)
+        const table = within(screen.getByRole("table"))
+        expect(table.getByRole("link", { name: "First video" })).toHaveAttribute("href", firstLink.url)
+        expect(table.getByRole("link", { name: secondLink.url })).toHaveAttribute("href", secondLink.url)
     })
 
     it("shows a YouTube thumbnail on hover", async () => {
@@ -100,15 +101,19 @@ describe("TableLink", () => {
 
         render(<TableLink />)
 
-        await user.hover(screen.getByRole("link", { name: "Video with preview" }))
+        await user.hover(within(screen.getByRole("table")).getByRole("link", { name: "Video with preview" }))
 
         await waitFor(() => {
-            expect(document.querySelector("img")).toHaveAttribute(
+            expect(Array.from(document.querySelectorAll("img")).find((image) =>
+                image.parentElement?.classList.contains("md:block"),
+            )).toHaveAttribute(
                 "src",
                 linkWithPreview.thumbnailUrl,
             )
         })
-        const thumbnail = document.querySelector("img")
+        const thumbnail = Array.from(document.querySelectorAll("img")).find((image) =>
+            image.parentElement?.classList.contains("md:block"),
+        )
         expect(thumbnail).toHaveAttribute(
             "src",
             linkWithPreview.thumbnailUrl,
@@ -121,7 +126,7 @@ describe("TableLink", () => {
 
         render(<TableLink />)
 
-        expect(screen.getAllByRole("link").map((link) => link.textContent)).toEqual([
+        expect(within(screen.getByRole("table")).getAllByRole("link").map((link) => link.textContent)).toEqual([
             "First video",
             secondLink.url,
         ])
@@ -144,7 +149,7 @@ describe("TableLink", () => {
 
         render(<TableLink />)
 
-        expect(screen.getAllByRole("link").map((link) => link.textContent)).toEqual([
+        expect(within(screen.getByRole("table")).getAllByRole("link").map((link) => link.textContent)).toEqual([
             "First video",
             "Third video",
             secondLink.url,
@@ -157,8 +162,9 @@ describe("TableLink", () => {
 
         render(<TableLink />)
 
-        const title = screen.getByRole("link", { name: "First video" })
-        const expandButton = screen.getByRole("button", { name: "Show more" })
+        const table = within(screen.getByRole("table"))
+        const title = table.getByRole("link", { name: "First video" })
+        const expandButton = table.getByRole("button", { name: "Show more" })
 
         expect(title).toHaveClass("line-clamp-2")
         expect(expandButton).toHaveAttribute("aria-expanded", "false")
@@ -167,14 +173,14 @@ describe("TableLink", () => {
         await user.click(expandButton)
 
         expect(title).toHaveClass("line-clamp-none")
-        expect(screen.getByRole("button", { name: "Show less" })).toHaveAttribute("aria-expanded", "true")
+        expect(table.getByRole("button", { name: "Show less" })).toHaveAttribute("aria-expanded", "true")
         expect(document.getElementById("link-preview-1")).toHaveClass("md:hidden")
         expect(document.querySelector("#link-preview-1 img")).toHaveAttribute(
             "src",
             firstLink.thumbnailUrl,
         )
 
-        await user.click(screen.getByRole("button", { name: "Show less" }))
+        await user.click(table.getByRole("button", { name: "Show less" }))
 
         expect(document.getElementById("link-preview-1")).not.toBeInTheDocument()
         expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
@@ -185,7 +191,7 @@ describe("TableLink", () => {
         configureHooks({ data: [firstLink], isPending: false, isError: false })
         render(<TableLink />)
 
-        await user.click(screen.getByRole("link", { name: "First video" }))
+        await user.click(within(screen.getByRole("table")).getByRole("link", { name: "First video" }))
 
         const dialog = screen.getByRole("dialog")
         expect(within(dialog).getByText("Open this link on YouTube?")).toBeInTheDocument()
@@ -203,7 +209,7 @@ describe("TableLink", () => {
         configureHooks({ data: [firstLink], isPending: false, isError: false })
         render(<TableLink />)
 
-        await user.click(screen.getByRole("link", { name: "First video" }))
+        await user.click(within(screen.getByRole("table")).getByRole("link", { name: "First video" }))
         await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Cancel" }))
 
         expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
