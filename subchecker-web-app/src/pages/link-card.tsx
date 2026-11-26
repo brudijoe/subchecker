@@ -2,6 +2,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Spinner } from "@/components/ui/spinner";
 import { RefreshButton } from "@/components/common/refresh-button";
+import { Skeleton } from "@/components/ui/skeleton";
 import {
     Dialog,
     DialogClose,
@@ -58,6 +59,31 @@ function HighQualityThumbnail({ url, title }: { url: string; title: string }) {
             className="aspect-video w-full object-cover"
             onError={() => setSrc((currentSrc) => currentSrc === url ? "" : url)}
         />
+    );
+}
+
+export function LinkCardSkeleton() {
+    return (
+        <Card className="gap-0 overflow-hidden py-0" aria-hidden="true">
+            <div className="space-y-2 p-3">
+                <div className="flex items-center gap-2">
+                    <Skeleton className="size-4 rounded-full" />
+                    <Skeleton className="h-4 w-20" />
+                    <Skeleton className="size-4 rounded-full" />
+                </div>
+                <Skeleton className="h-4 w-1/3" />
+                <Skeleton className="h-5 w-2/3" />
+            </div>
+
+            <div className="mx-3 overflow-hidden rounded-xl">
+                <Skeleton className="aspect-video w-full" />
+            </div>
+
+            <div className="flex flex-col items-start gap-1 p-3">
+                <Skeleton className="h-8 w-24" />
+                <Skeleton className="h-8 w-28" />
+            </div>
+        </Card>
     );
 }
 

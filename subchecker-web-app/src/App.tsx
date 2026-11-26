@@ -1,4 +1,4 @@
-import { TableLink } from "./pages/table-link"
+import { LinkList } from "./pages/link-list"
 import { Play } from "lucide-react"
 import { DialogLink } from "./pages/dialog-link"
 import { SystemStatus } from "@/components/system-status"
@@ -32,7 +32,7 @@ function App() {
           </p>
         </header>
 
-        <TableLink />
+        <LinkList />
         <DialogLink />
       </main>
     </div>

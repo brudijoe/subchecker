@@ -1,19 +1,6 @@
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useCheckLink, useDeleteLink, useLinks } from "@/hooks/useLinks";
 import type { LinkDto } from "@/types/types";
-import { LinkCard } from "@/pages/link-card";
-
-function LinkCardSkeleton() {
-    return (
-        <Card className="gap-3 p-3" aria-hidden="true">
-            <Skeleton className="h-4 w-28" />
-            <Skeleton className="h-4 w-2/3" />
-            <Skeleton className="aspect-video w-full" />
-            <Skeleton className="h-8 w-24" />
-        </Card>
-    );
-}
+import { LinkCard, LinkCardSkeleton } from "@/pages/link-card";
 
 function sortLinks(links: LinkDto[]) {
     return links.toSorted((leftLink, rightLink) =>
@@ -22,14 +9,14 @@ function sortLinks(links: LinkDto[]) {
     );
 }
 
-export function TableLink() {
+export function LinkList() {
     const { data: links = [], isPending, isError } = useLinks();
     const checkMutation = useCheckLink();
     const deleteMutation = useDeleteLink();
 
     if (isPending) {
         return (
-            <div className="grid gap-3 md:grid-cols-2" aria-label="Loading links">
+            <div className="grid gap-3 md:grid-cols-2" role="status" aria-label="Loading links">
                 <LinkCardSkeleton />
                 <LinkCardSkeleton />
             </div>

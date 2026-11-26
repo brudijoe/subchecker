@@ -2,7 +2,7 @@ import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { LinkDto } from "@/types/types";
-import { TableLink } from "./table-link";
+import { LinkList } from "./link-list";
 
 const mocks = vi.hoisted(() => ({
     useCheckLink: vi.fn(),
@@ -56,25 +56,29 @@ beforeEach(() => {
     mocks.deleteLink.mockReset();
 });
 
-describe("TableLink", () => {
+describe("LinkList", () => {
     it("shows loading cards while links are pending", () => {
         configureHooks({ data: undefined, isPending: true, isError: false });
 
-        render(<TableLink />);
+        render(<LinkList />);
 
-        expect(screen.getByLabelText("Loading links")).toBeInTheDocument();
+        const loading = screen.getByRole("status", { name: "Loading links" });
+        const cards = loading.querySelectorAll('[data-slot="card"]');
+        expect(cards).toHaveLength(2);
+        const thumbnailPlaceholder = cards[0].querySelector(".aspect-video");
+        expect(thumbnailPlaceholder?.parentElement).toHaveClass("mx-3", "overflow-hidden", "rounded-xl");
         expect(screen.queryByText("No links added yet.")).not.toBeInTheDocument();
     });
 
-    it("shows error and empty states without a table", () => {
+    it("shows error and empty states without cards", () => {
         configureHooks({ data: undefined, isPending: false, isError: true });
-        const { rerender } = render(<TableLink />);
+        const { rerender } = render(<LinkList />);
 
         expect(screen.getByText("The links could not be loaded.")).toBeInTheDocument();
         expect(screen.queryByRole("table")).not.toBeInTheDocument();
 
         configureHooks({ data: [], isPending: false, isError: false });
-        rerender(<TableLink />);
+        rerender(<LinkList />);
 
         expect(screen.getByText("No links added yet.")).toBeInTheDocument();
     });
@@ -82,7 +86,7 @@ describe("TableLink", () => {
     it("renders all links as cards and sorts available subtitles first", () => {
         configureHooks({ data: [secondLink, firstLink], isPending: false, isError: false });
 
-        render(<TableLink />);
+        render(<LinkList />);
 
         const cards = screen.getAllByTestId(/link-card-/);
         expect(cards).toHaveLength(2);
@@ -93,7 +97,7 @@ describe("TableLink", () => {
     it("checks links and deletes them only after confirmation", async () => {
         const user = userEvent.setup();
         configureHooks({ data: [secondLink], isPending: false, isError: false });
-        render(<TableLink />);
+        render(<LinkList />);
 
         const card = screen.getByTestId("link-card-2");
         await user.click(within(card).getByRole("button", { name: "Refresh link" }));
