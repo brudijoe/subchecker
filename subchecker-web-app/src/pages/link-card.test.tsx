@@ -1,8 +1,8 @@
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import type { LinkDto, LinkRowProps } from "@/types/types";
-import { MobileLinkCard } from "./mobile-link-card";
+import { LinkCard } from "./link-card";
 
 const link: LinkDto = {
     id: 1,
@@ -27,29 +27,41 @@ function renderCard(overrides: Partial<LinkRowProps> = {}) {
         ...overrides,
     };
 
-    return { ...render(<MobileLinkCard {...props} />), props };
+    return { ...render(<LinkCard {...props} />), props };
 }
 
-describe("MobileLinkCard", () => {
-    it("shows subtitle status, title and full-width thumbnail without a title expander", () => {
+describe("LinkCard", () => {
+    it("shows subtitle status, channel, title and a high-quality thumbnail", () => {
         const { container } = renderCard();
-        const card = screen.getByTestId("mobile-link-card-1");
+        const card = screen.getByTestId("link-card-1");
 
         expect(within(card).getByRole("img", { name: "English subtitles available" })).toBeInTheDocument();
         expect(within(card).getByRole("link", { name: "First video" })).toHaveAttribute("href", link.url);
         expect(within(card).getByRole("img", { name: "Thumbnail for First video" })).toHaveAttribute(
             "src",
-            link.thumbnailUrl,
+            "https://i.ytimg.com/vi/first/maxresdefault.jpg",
         );
         expect(within(card).getByText("Example Channel")).toBeInTheDocument();
-        expect(within(card).queryByRole("button", { name: /show more|show less/i })).not.toBeInTheDocument();
-        expect(container.querySelector("img")).toHaveClass("w-full");
+        const thumbnail = container.querySelector("img");
+        expect(thumbnail).toHaveClass("w-full");
+        expect(thumbnail?.parentElement).toHaveClass("mx-3", "overflow-hidden", "rounded-xl");
+        expect(within(card).queryByRole("button", { name: "Refresh link" })).not.toBeInTheDocument();
+        expect(within(card).getAllByRole("button").map((button) => button.textContent?.trim())).toEqual(["Delete link"]);
+    });
+
+    it("falls back to the available thumbnail when the higher-quality image is missing", () => {
+        renderCard();
+        const image = screen.getByRole("img", { name: "Thumbnail for First video" });
+
+        fireEvent.error(image);
+
+        expect(image).toHaveAttribute("src", link.thumbnailUrl);
     });
 
     it("checks a link and asks for confirmation before deleting", async () => {
         const user = userEvent.setup();
         const { props } = renderCard({ link: { ...link, englishSubtitles: false } });
-        const card = screen.getByTestId("mobile-link-card-1");
+        const card = screen.getByTestId("link-card-1");
 
         await user.click(within(card).getByRole("button", { name: "Refresh link" }));
         expect(props.onCheck).toHaveBeenCalledOnce();

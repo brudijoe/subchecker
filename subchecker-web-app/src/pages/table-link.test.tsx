@@ -1,8 +1,8 @@
-import { render, screen, waitFor, within } from "@testing-library/react"
-import userEvent from "@testing-library/user-event"
-import { beforeEach, describe, expect, it, vi } from "vitest"
-import type { LinkDto } from "@/types/types"
-import { TableLink } from "./table-link"
+import { render, screen, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
+import { beforeEach, describe, expect, it, vi } from "vitest";
+import type { LinkDto } from "@/types/types";
+import { TableLink } from "./table-link";
 
 const mocks = vi.hoisted(() => ({
     useCheckLink: vi.fn(),
@@ -10,13 +10,13 @@ const mocks = vi.hoisted(() => ({
     useLinks: vi.fn(),
     checkLink: vi.fn(),
     deleteLink: vi.fn(),
-}))
+}));
 
 vi.mock("@/hooks/useLinks", () => ({
     useCheckLink: mocks.useCheckLink,
     useDeleteLink: mocks.useDeleteLink,
     useLinks: mocks.useLinks,
-}))
+}));
 
 const firstLink: LinkDto = {
     id: 1,
@@ -29,7 +29,7 @@ const firstLink: LinkDto = {
     refreshRemainingMs: 0,
     notifiedAt: null,
     createdAt: "2026-01-01T00:00:00.000Z",
-}
+};
 
 const secondLink: LinkDto = {
     id: 2,
@@ -42,231 +42,67 @@ const secondLink: LinkDto = {
     refreshRemainingMs: 0,
     notifiedAt: null,
     createdAt: "2026-01-01T00:00:00.000Z",
-}
+};
 
 function configureHooks(linksState: object, checkState = {}, deleteState = {}) {
-    mocks.useLinks.mockReturnValue(linksState)
-    mocks.useCheckLink.mockReturnValue({ mutate: mocks.checkLink, ...checkState })
-    mocks.useDeleteLink.mockReturnValue({ mutate: mocks.deleteLink, ...deleteState })
+    mocks.useLinks.mockReturnValue(linksState);
+    mocks.useCheckLink.mockReturnValue({ mutate: mocks.checkLink, ...checkState });
+    mocks.useDeleteLink.mockReturnValue({ mutate: mocks.deleteLink, ...deleteState });
 }
 
 beforeEach(() => {
-    configureHooks({ data: [], isPending: false, isError: false })
-})
+    configureHooks({ data: [], isPending: false, isError: false });
+    mocks.checkLink.mockReset();
+    mocks.deleteLink.mockReset();
+});
 
 describe("TableLink", () => {
-    it("shows a loading row while links are pending", () => {
-        configureHooks({ data: undefined, isPending: true, isError: false })
+    it("shows loading cards while links are pending", () => {
+        configureHooks({ data: undefined, isPending: true, isError: false });
 
-        render(<TableLink />)
+        render(<TableLink />);
 
-        expect(screen.getAllByRole("row")).toHaveLength(2)
-        expect(screen.queryByText("No links added yet.")).not.toBeInTheDocument()
-    })
+        expect(screen.getByLabelText("Loading links")).toBeInTheDocument();
+        expect(screen.queryByText("No links added yet.")).not.toBeInTheDocument();
+    });
 
-    it("shows an error when loading links fails", () => {
-        configureHooks({ data: undefined, isPending: false, isError: true })
+    it("shows error and empty states without a table", () => {
+        configureHooks({ data: undefined, isPending: false, isError: true });
+        const { rerender } = render(<TableLink />);
 
-        render(<TableLink />)
+        expect(screen.getByText("The links could not be loaded.")).toBeInTheDocument();
+        expect(screen.queryByRole("table")).not.toBeInTheDocument();
 
-        expect(within(screen.getByRole("table")).getByText("The links could not be loaded.")).toBeInTheDocument()
-    })
+        configureHooks({ data: [], isPending: false, isError: false });
+        rerender(<TableLink />);
 
-    it("shows an empty state when no links exist", () => {
-        render(<TableLink />)
+        expect(screen.getByText("No links added yet.")).toBeInTheDocument();
+    });
 
-        expect(within(screen.getByRole("table")).getByText("No links added yet.")).toBeInTheDocument()
-    })
+    it("renders all links as cards and sorts available subtitles first", () => {
+        configureHooks({ data: [secondLink, firstLink], isPending: false, isError: false });
 
-    it("renders titles and falls back to the URL", () => {
-        configureHooks({ data: [firstLink, secondLink], isPending: false, isError: false })
+        render(<TableLink />);
 
-        render(<TableLink />)
+        const cards = screen.getAllByTestId(/link-card-/);
+        expect(cards).toHaveLength(2);
+        expect(within(cards[0]).getByRole("link", { name: "First video" })).toHaveAttribute("href", firstLink.url);
+        expect(within(cards[1]).getByRole("link", { name: secondLink.url })).toHaveAttribute("href", secondLink.url);
+    });
 
-        const table = within(screen.getByRole("table"))
-        expect(table.getByRole("link", { name: "First video" })).toHaveAttribute("href", firstLink.url)
-        expect(table.getByRole("link", { name: secondLink.url })).toHaveAttribute("href", secondLink.url)
-    })
+    it("checks links and deletes them only after confirmation", async () => {
+        const user = userEvent.setup();
+        configureHooks({ data: [secondLink], isPending: false, isError: false });
+        render(<TableLink />);
 
-    it("shows a YouTube thumbnail on hover", async () => {
-        const user = userEvent.setup()
-        const linkWithPreview = {
-            ...firstLink,
-            url: "https://www.youtube.com/watch?v=wfaL-baiNUo",
-            thumbnailUrl: "https://i.ytimg.com/vi/wfaL-baiNUo/hqdefault.jpg",
-            title: "Video with preview",
-            englishSubtitles: false,
-        }
-        configureHooks({ data: [linkWithPreview], isPending: false, isError: false })
+        const card = screen.getByTestId("link-card-2");
+        await user.click(within(card).getByRole("button", { name: "Refresh link" }));
+        expect(mocks.checkLink).toHaveBeenCalledWith(secondLink.id);
 
-        render(<TableLink />)
+        await user.click(within(card).getByRole("button", { name: "Delete link" }));
+        expect(mocks.deleteLink).not.toHaveBeenCalled();
 
-        await user.hover(within(screen.getByRole("table")).getByRole("link", { name: "Video with preview" }))
-
-        await waitFor(() => {
-            expect(Array.from(document.querySelectorAll("img")).find((image) =>
-                image.parentElement?.classList.contains("md:block"),
-            )).toHaveAttribute(
-                "src",
-                linkWithPreview.thumbnailUrl,
-            )
-        })
-        const thumbnail = Array.from(document.querySelectorAll("img")).find((image) =>
-            image.parentElement?.classList.contains("md:block"),
-        )
-        expect(thumbnail).toHaveAttribute(
-            "src",
-            linkWithPreview.thumbnailUrl,
-        )
-        expect(thumbnail?.parentElement).toHaveClass("hidden", "md:block")
-    })
-
-    it("sorts links with English subtitles to the top", () => {
-        configureHooks({ data: [secondLink, firstLink], isPending: false, isError: false })
-
-        render(<TableLink />)
-
-        expect(within(screen.getByRole("table")).getAllByRole("link").map((link) => link.textContent)).toEqual([
-            "First video",
-            secondLink.url,
-        ])
-    })
-
-    it("sorts links with the same subtitle status by ID", () => {
-        const thirdLink: LinkDto = {
-            id: 3,
-            url: "https://youtube.com/watch?v=third",
-            thumbnailUrl: null,
-            title: "Third video",
-            channelName: null,
-            englishSubtitles: true,
-            subtitleCheckedAt: null,
-            refreshRemainingMs: 0,
-            notifiedAt: null,
-            createdAt: "2026-01-01T00:00:00.000Z",
-        }
-        configureHooks({ data: [thirdLink, secondLink, firstLink], isPending: false, isError: false })
-
-        render(<TableLink />)
-
-        expect(within(screen.getByRole("table")).getAllByRole("link").map((link) => link.textContent)).toEqual([
-            "First video",
-            "Third video",
-            secondLink.url,
-        ])
-    })
-
-    it("allows expanding and collapsing a title", async () => {
-        const user = userEvent.setup()
-        configureHooks({ data: [firstLink], isPending: false, isError: false })
-
-        render(<TableLink />)
-
-        const table = within(screen.getByRole("table"))
-        const title = table.getByRole("link", { name: "First video" })
-        const expandButton = table.getByRole("button", { name: "Show more" })
-
-        expect(title).toHaveClass("line-clamp-2")
-        expect(expandButton).toHaveAttribute("aria-expanded", "false")
-        expect(document.getElementById("link-preview-1")).not.toBeInTheDocument()
-
-        await user.click(expandButton)
-
-        expect(title).toHaveClass("line-clamp-none")
-        expect(table.getByRole("button", { name: "Show less" })).toHaveAttribute("aria-expanded", "true")
-        expect(document.getElementById("link-preview-1")).toHaveClass("md:hidden")
-        expect(document.querySelector("#link-preview-1 img")).toHaveAttribute(
-            "src",
-            firstLink.thumbnailUrl,
-        )
-
-        await user.click(table.getByRole("button", { name: "Show less" }))
-
-        expect(document.getElementById("link-preview-1")).not.toBeInTheDocument()
-        expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
-    })
-
-    it("asks for confirmation before opening a link on YouTube", async () => {
-        const user = userEvent.setup()
-        configureHooks({ data: [firstLink], isPending: false, isError: false })
-        render(<TableLink />)
-
-        await user.click(within(screen.getByRole("table")).getByRole("link", { name: "First video" }))
-
-        const dialog = screen.getByRole("dialog")
-        expect(within(dialog).getByText("Open this link on YouTube?")).toBeInTheDocument()
-        expect(within(dialog).getByText(
-            "You are about to leave Subchecker and open this link on YouTube.",
-        )).toBeInTheDocument()
-
-        const continueLink = within(dialog).getByRole("link", { name: "Continue to YouTube" })
-        expect(continueLink).toHaveAttribute("href", firstLink.url)
-        expect(continueLink).toHaveAttribute("target", "_blank")
-    })
-
-    it("does not open a link when the confirmation is cancelled", async () => {
-        const user = userEvent.setup()
-        configureHooks({ data: [firstLink], isPending: false, isError: false })
-        render(<TableLink />)
-
-        await user.click(within(screen.getByRole("table")).getByRole("link", { name: "First video" }))
-        await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Cancel" }))
-
-        expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
-    })
-
-    it("checks a link and deletes it only after confirmation", async () => {
-        const user = userEvent.setup()
-        configureHooks({ data: [firstLink, secondLink], isPending: false, isError: false })
-        render(<TableLink />)
-
-        const rows = screen.getAllByRole("row")
-        await user.click(within(rows[2]).getByRole("button", { name: "Refresh link" }))
-        await user.click(within(rows[2]).getByRole("button", { name: "Delete link" }))
-
-        expect(mocks.checkLink).toHaveBeenCalledWith(secondLink.id)
-        expect(mocks.deleteLink).not.toHaveBeenCalled()
-
-        const dialog = screen.getByRole("dialog")
-        expect(within(dialog).getByText("Delete this link?")).toBeInTheDocument()
-        await user.click(within(dialog).getByRole("button", { name: "Delete link" }))
-
-        expect(mocks.deleteLink).toHaveBeenCalledWith(secondLink.id)
-    })
-
-    it("does not delete a link when deletion is cancelled", async () => {
-        const user = userEvent.setup()
-        configureHooks({ data: [firstLink], isPending: false, isError: false })
-        render(<TableLink />)
-
-        const row = screen.getAllByRole("row")[1]
-        await user.click(within(row).getByRole("button", { name: "Delete link" }))
-        await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Cancel" }))
-
-        expect(mocks.deleteLink).not.toHaveBeenCalled()
-    })
-
-    it("disables only the link currently being checked", () => {
-        const uncheckedFirstLink = { ...firstLink, englishSubtitles: null }
-        configureHooks(
-            { data: [uncheckedFirstLink, secondLink], isPending: false, isError: false },
-            { isPending: true, variables: uncheckedFirstLink.id },
-        )
-
-        render(<TableLink />)
-
-        const rows = screen.getAllByRole("row")
-        expect(within(rows[1]).getByRole("button", { name: "Refreshing link" })).toBeDisabled()
-        expect(within(rows[2]).getByRole("button", { name: "Refresh link" })).toBeEnabled()
-    })
-
-    it("disables refresh when English subtitles are available", () => {
-        configureHooks({ data: [firstLink, secondLink], isPending: false, isError: false })
-
-        render(<TableLink />)
-
-        const rows = screen.getAllByRole("row")
-        expect(within(rows[1]).getByRole("button", { name: "Refresh link" })).toBeDisabled()
-        expect(within(rows[2]).getByRole("button", { name: "Refresh link" })).toBeEnabled()
-    })
-})
+        await user.click(within(screen.getByRole("dialog")).getByRole("button", { name: "Delete link" }));
+        expect(mocks.deleteLink).toHaveBeenCalledWith(secondLink.id);
+    });
+});

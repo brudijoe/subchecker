@@ -13,7 +13,7 @@ import {
     DialogTrigger,
 } from "@/components/ui/dialog";
 import type { LinkRowProps } from "@/types/types";
-import { CircleCheck, CircleX, Trash } from "lucide-react";
+import { Captions, CircleCheck, CircleX, Trash2 } from "lucide-react";
 import { useState } from "react";
 
 function SubtitleIndicator({
@@ -22,51 +22,76 @@ function SubtitleIndicator({
 }: Pick<LinkRowProps, "isChecking"> & {
     englishSubtitles: LinkRowProps["link"]["englishSubtitles"];
 }) {
-    if (isChecking) return <Spinner aria-label="Checking subtitles" className="size-5" />;
+    if (isChecking) return <Spinner aria-label="Checking subtitles" className="size-4" />;
 
     if (englishSubtitles === true) {
         return (
-            <span role="img" aria-label="English subtitles available" className="text-emerald-600">
-                <CircleCheck className="size-5" />
+            <span role="img" aria-label="English subtitles available" title="English subtitles available" className="text-emerald-600">
+                <CircleCheck className="size-4" />
             </span>
         );
     }
 
     if (englishSubtitles === false) {
         return (
-            <span role="img" aria-label="No English subtitles found" className="text-destructive">
-                <CircleX className="size-5" />
+            <span role="img" aria-label="No English subtitles found" title="No English subtitles found" className="text-destructive">
+                <CircleX className="size-4" />
             </span>
         );
     }
 
-    return <span role="img" aria-label="Subtitle status not checked yet">-</span>;
+    return <span role="img" aria-label="Subtitle status not checked yet" title="Subtitle status not checked yet">-</span>;
 }
 
-export function MobileLinkCard({ link, isChecking, isDeleting, onDelete, onCheck }: LinkRowProps) {
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [openLinkDialogOpen, setOpenLinkDialogOpen] = useState(false);
+function HighQualityThumbnail({ url, title }: { url: string; title: string }) {
+    const highQualityUrl = url.replace(/\/hqdefault\.jpg(?=([?#]|$))/, "/maxresdefault.jpg");
+    const [src, setSrc] = useState(highQualityUrl);
+
+    if (!src) return null;
 
     return (
-        <Card data-testid={`mobile-link-card-${link.id}`} className="gap-0 py-0">
-            <div className="flex min-w-0 items-center gap-2 p-3">
-                <div className="flex size-8 shrink-0 items-center justify-center">
+        <img
+            src={src}
+            alt={`Thumbnail for ${title}`}
+            loading="lazy"
+            decoding="async"
+            className="aspect-video w-full object-cover"
+            onError={() => setSrc((currentSrc) => currentSrc === url ? "" : url)}
+        />
+    );
+}
+
+export function LinkCard({ link, isChecking, isDeleting, onDelete, onCheck }: LinkRowProps) {
+    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+    const [openLinkDialogOpen, setOpenLinkDialogOpen] = useState(false);
+    const title = link.title || link.url;
+
+    return (
+        <Card data-testid={`link-card-${link.id}`} className="gap-0 overflow-hidden py-0">
+            <div className="space-y-2 p-3">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                    <Captions aria-hidden="true" className="size-4 shrink-0" />
+                    <span>Subtitles</span>
                     <SubtitleIndicator
                         isChecking={isChecking}
                         englishSubtitles={link.englishSubtitles}
                     />
                 </div>
 
+                {link.channelName && (
+                    <p className="truncate text-sm font-medium">{link.channelName}</p>
+                )}
+
                 <Dialog open={openLinkDialogOpen} onOpenChange={setOpenLinkDialogOpen}>
                     <a
                         href={link.url}
-                        className="min-w-0 flex-1 [overflow-wrap:anywhere] hover:underline"
+                        className="block [overflow-wrap:anywhere] font-semibold leading-snug hover:underline"
                         onClick={(event) => {
                             event.preventDefault();
                             setOpenLinkDialogOpen(true);
                         }}
                     >
-                        {link.title || link.url}
+                        {title}
                     </a>
                     <DialogContent>
                         <DialogHeader>
@@ -95,18 +120,43 @@ export function MobileLinkCard({ link, isChecking, isDeleting, onDelete, onCheck
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
+            </div>
+
+            {link.thumbnailUrl && (
+                <div className="mx-3 overflow-hidden rounded-xl">
+                    <HighQualityThumbnail
+                        key={link.thumbnailUrl}
+                        url={link.thumbnailUrl}
+                        title={title}
+                    />
+                </div>
+            )}
+
+            <div className="flex flex-col items-start gap-1 p-3">
+                {link.englishSubtitles !== true && (
+                    <RefreshButton
+                        key={`${link.id}-${link.refreshRemainingMs}`}
+                        disabled={isChecking}
+                        hasEnglishSubtitles={false}
+                        isRefreshing={isChecking}
+                        refreshRemainingMs={link.refreshRemainingMs}
+                        onRefresh={onCheck}
+                    />
+                )}
 
                 <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
                     <DialogTrigger
                         render={
                             <Button
                                 variant="ghost"
-                                size="icon"
+                                size="sm"
+                                className="justify-start text-destructive hover:bg-destructive/10 hover:text-destructive"
                                 aria-label="Delete link"
                                 title="Delete link"
                                 disabled={isDeleting}
                             >
-                                <Trash className="size-4" />
+                                <Trash2 className="size-4" />
+                                Delete link
                             </Button>
                         }
                     />
@@ -139,29 +189,7 @@ export function MobileLinkCard({ link, isChecking, isDeleting, onDelete, onCheck
                         </DialogFooter>
                     </DialogContent>
                 </Dialog>
-
-                <RefreshButton
-                    key={`${link.id}-${link.refreshRemainingMs}`}
-                    disabled={isChecking || link.englishSubtitles === true}
-                    hasEnglishSubtitles={link.englishSubtitles === true}
-                    isRefreshing={isChecking}
-                    refreshRemainingMs={link.refreshRemainingMs}
-                    onRefresh={onCheck}
-                />
             </div>
-
-            {link.thumbnailUrl && (
-                <img
-                    src={link.thumbnailUrl}
-                    alt={link.title ? `Thumbnail for ${link.title}` : "YouTube video thumbnail"}
-                    loading="lazy"
-                    decoding="async"
-                    className="aspect-video w-full object-cover"
-                />
-            )}
-            {link.channelName && (
-                <p className="truncate px-3 py-2 text-sm font-medium">{link.channelName}</p>
-            )}
         </Card>
     );
 }

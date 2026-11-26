@@ -25,6 +25,7 @@ describe("RefreshButton", () => {
         expect(button).toBeDisabled()
         expect(screen.getByText("05:00")).toBeInTheDocument()
         expect(container.querySelector(".lucide-refresh-cw")).not.toBeInTheDocument()
+        expect(container.querySelector(".lucide-refresh-cw-off")).toBeInTheDocument()
 
         act(() => {
             vi.advanceTimersByTime(999)
@@ -45,6 +46,7 @@ describe("RefreshButton", () => {
         expect(screen.queryByText("00:00")).not.toBeInTheDocument()
         expect(screen.getByRole("button", { name: "Refresh link" })).toBeEnabled()
         expect(container.querySelector(".lucide-refresh-cw")).toBeInTheDocument()
+        expect(container.querySelector(".lucide-refresh-cw-off")).not.toBeInTheDocument()
 
         fireEvent.click(screen.getByRole("button", { name: "Refresh link" }))
 

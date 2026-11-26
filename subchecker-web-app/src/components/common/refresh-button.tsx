@@ -76,6 +76,8 @@ export function RefreshButton({
                     ? <RefreshCwOff className="size-4" />
                     : <RefreshCw className={`size-4 ${disabled ? "animate-spin" : ""}`} />
             )}
+            {!isRefreshing && remainingSeconds > 0 && <RefreshCwOff className="size-4" />}
+            <span>Refresh</span>
             {!isRefreshing && remainingSeconds > 0 && <span>{timeLabel}</span>}
         </Button>
     )

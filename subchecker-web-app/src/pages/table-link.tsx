@@ -1,206 +1,24 @@
-import { Button, buttonVariants } from "@/components/ui/button";
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableHead,
-    TableHeader,
-    TableRow,
-} from "@/components/ui/table";
-import { Spinner } from "@/components/ui/spinner";
-import { CircleCheck, CircleX, Trash } from "lucide-react";
+import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LinkPreview } from "@/components/common/link-preview";
-import { MobileLinkCard } from "@/pages/mobile-link-card";
-import { RefreshButton } from "@/components/common/refresh-button";
 import { useCheckLink, useDeleteLink, useLinks } from "@/hooks/useLinks";
-import type { LinkRowProps } from "@/types/types";
-import { useState, type ReactNode } from "react";
-import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog";
+import type { LinkDto } from "@/types/types";
+import { LinkCard } from "@/pages/link-card";
 
-function getSubtitleIndicator(
-    isChecking: boolean,
-    englishSubtitles: LinkRowProps["link"]["englishSubtitles"],
-) {
-    if (isChecking) return <Spinner className="size-4" />;
-
-    if (englishSubtitles === true) {
-        return (
-            <span className="rounded-full bg-emerald-500">
-                <CircleCheck className="size-4" />
-            </span>
-        );
-    }
-
-    if (englishSubtitles === false) {
-        return (
-            <span className="rounded-full bg-destructive">
-                <CircleX className="size-4" />
-            </span>
-        );
-    }
-
-    return "-";
-}
-
-function TableLinkSkeletonRow() {
+function LinkCardSkeleton() {
     return (
-        <TableRow>
-            {/* Subtitles */}
-            <TableCell className="w-[80px] text-center">
-                <div className="flex items-center justify-center">
-                    <Skeleton className="size-4 rounded-full" />
-                </div>
-            </TableCell>
-
-            {/* Title */}
-            <TableCell className="whitespace-normal [overflow-wrap:anywhere]">
-                <Skeleton className="h-4 w-3/4" />
-            </TableCell>
-
-            {/* Delete */}
-            <TableCell className="w-[80px] text-center">
-                <Skeleton className="mx-auto size-8 rounded-md" />
-            </TableCell>
-
-            {/* Refresh */}
-            <TableCell className="w-[120px] text-center">
-                <Skeleton className="mx-auto h-8 w-24 rounded-md" />
-            </TableCell>
-        </TableRow>
+        <Card className="gap-3 p-3" aria-hidden="true">
+            <Skeleton className="h-4 w-28" />
+            <Skeleton className="h-4 w-2/3" />
+            <Skeleton className="aspect-video w-full" />
+            <Skeleton className="h-8 w-24" />
+        </Card>
     );
 }
 
-function TableLinkRow({ link, isChecking, isDeleting, onDelete, onCheck }: LinkRowProps) {
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [openLinkDialogOpen, setOpenLinkDialogOpen] = useState(false);
-
-    return (
-        <TableRow>
-            {/* Subtitles */}
-            <TableCell className="w-[80px]">
-                <div className="flex items-center justify-center">
-                    {getSubtitleIndicator(isChecking, link.englishSubtitles)}
-                </div>
-            </TableCell>
-
-            {/* Title */}
-            <TableCell className="whitespace-normal [overflow-wrap:anywhere]">
-                <div>
-                    <LinkPreview
-                        link={link}
-                        onOpenLink={() => setOpenLinkDialogOpen(true)}
-                        className="hover:underline"
-                    >
-                        {link.title || link.url}
-                    </LinkPreview>
-                    <Dialog open={openLinkDialogOpen} onOpenChange={setOpenLinkDialogOpen}>
-                        <DialogContent>
-                            <DialogHeader>
-                                <DialogTitle>Open this link on YouTube?</DialogTitle>
-                                <DialogDescription>
-                                    You are about to leave Subchecker and open this link on YouTube.
-                                </DialogDescription>
-                            </DialogHeader>
-                            <DialogFooter>
-                                <DialogClose
-                                    render={
-                                        <Button type="button" variant="outline">
-                                            Cancel
-                                        </Button>
-                                    }
-                                />
-                                <a
-                                    className={buttonVariants()}
-                                    href={link.url}
-                                    target="_blank"
-                                    rel="noreferrer"
-                                    onClick={() => setOpenLinkDialogOpen(false)}
-                                >
-                                    Continue to YouTube
-                                </a>
-                            </DialogFooter>
-                        </DialogContent>
-                    </Dialog>
-                </div>
-            </TableCell>
-
-            {/* Delete */}
-            <TableCell className="w-[80px] text-center">
-                <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
-                    <DialogTrigger
-                        render={
-                            <Button
-                                variant="ghost"
-                                size="icon"
-                                aria-label="Delete link"
-                                title="Delete link"
-                                disabled={isDeleting}
-                            >
-                                <Trash className="size-4" />
-                            </Button>
-                        }
-                    />
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Delete this link?</DialogTitle>
-                            <DialogDescription>
-                                This action cannot be undone. The link will be removed from your list.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <DialogFooter>
-                            <DialogClose
-                                render={
-                                    <Button type="button" variant="outline">
-                                        Cancel
-                                    </Button>
-                                }
-                            />
-                            <Button
-                                type="button"
-                                variant="destructive"
-                                disabled={isDeleting}
-                                onClick={() => {
-                                    onDelete();
-                                    setDeleteDialogOpen(false);
-                                }}
-                            >
-                                Delete link
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-            </TableCell>
-
-            {/* Refresh */}
-            <TableCell className="w-[120px] text-center">
-                <RefreshButton
-                    key={`${link.id}-${link.refreshRemainingMs}`}
-                    disabled={isChecking || link.englishSubtitles === true}
-                    hasEnglishSubtitles={link.englishSubtitles === true}
-                    isRefreshing={isChecking}
-                    refreshRemainingMs={link.refreshRemainingMs}
-                    onRefresh={onCheck}
-                />
-            </TableCell>
-        </TableRow>
-    );
-}
-
-function MessageRow({ children }: { children: ReactNode }) {
-    return (
-        <TableRow>
-            <TableCell colSpan={4}>{children}</TableCell>
-        </TableRow>
+function sortLinks(links: LinkDto[]) {
+    return links.toSorted((leftLink, rightLink) =>
+        Number(rightLink.englishSubtitles === true) - Number(leftLink.englishSubtitles === true)
+        || leftLink.id - rightLink.id
     );
 }
 
@@ -209,74 +27,32 @@ export function TableLink() {
     const checkMutation = useCheckLink();
     const deleteMutation = useDeleteLink();
 
-    const table = (children: ReactNode) => (
-        <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead className="w-[80px] text-center">Subtitles</TableHead>
-                    <TableHead>Title</TableHead>
-                    <TableHead className="text-center">Delete</TableHead>
-                    <TableHead className="text-center">Refresh</TableHead>
-                </TableRow>
-            </TableHeader>
-            <TableBody>{children}</TableBody>
-        </Table>
-    );
-
     if (isPending) {
         return (
-            <>
-                <div className="space-y-3 md:hidden" aria-label="Loading links">
-                    <div className="h-28 animate-pulse rounded-xl bg-muted" />
-                    <div className="h-28 animate-pulse rounded-xl bg-muted" />
-                </div>
-                <div className="hidden md:block">{table(<TableLinkSkeletonRow />)}</div>
-            </>
+            <div className="grid gap-3 md:grid-cols-2" aria-label="Loading links">
+                <LinkCardSkeleton />
+                <LinkCardSkeleton />
+            </div>
         );
     }
 
     if (isError || links.length === 0) {
         const message = isError ? "The links could not be loaded." : "No links added yet.";
-        return (
-            <>
-                <div className="rounded-xl border p-4 text-sm md:hidden">{message}</div>
-                <div className="hidden md:block">{table(<MessageRow>{message}</MessageRow>)}</div>
-            </>
-        );
+        return <div className="rounded-xl border p-4 text-sm">{message}</div>;
     }
 
-    // Keep subtitle links first and use IDs for stable ordering.
-    const sortedLinks = links.toSorted((leftLink, rightLink) =>
-        Number(rightLink.englishSubtitles === true) - Number(leftLink.englishSubtitles === true)
-        || leftLink.id - rightLink.id
-    );
-
     return (
-        <>
-            <div className="space-y-3 md:hidden">
-                {sortedLinks.map((link) => (
-                    <MobileLinkCard
-                        key={link.id}
-                        link={link}
-                        isChecking={checkMutation.isPending && checkMutation.variables === link.id}
-                        isDeleting={deleteMutation.isPending}
-                        onDelete={() => deleteMutation.mutate(link.id)}
-                        onCheck={() => checkMutation.mutate(link.id)}
-                    />
-                ))}
-            </div>
-            <div className="hidden md:block">
-                {table(sortedLinks.map((link) => (
-                    <TableLinkRow
-                        key={link.id}
-                        link={link}
-                        isChecking={checkMutation.isPending && checkMutation.variables === link.id}
-                        isDeleting={deleteMutation.isPending}
-                        onDelete={() => deleteMutation.mutate(link.id)}
-                        onCheck={() => checkMutation.mutate(link.id)}
-                    />
-                )))}
-            </div>
-        </>
+        <div className="grid gap-3 md:grid-cols-2">
+            {sortLinks(links).map((link) => (
+                <LinkCard
+                    key={link.id}
+                    link={link}
+                    isChecking={checkMutation.isPending && checkMutation.variables === link.id}
+                    isDeleting={deleteMutation.isPending}
+                    onDelete={() => deleteMutation.mutate(link.id)}
+                    onCheck={() => checkMutation.mutate(link.id)}
+                />
+            ))}
+        </div>
     );
 }
