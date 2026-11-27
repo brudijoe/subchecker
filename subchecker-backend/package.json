@@ -12,7 +12,7 @@
   "dependencies": {
     "@hono/node-server": "^2.1.11",
     "dotenv": "^18.0.10",
-    "drizzle-orm": "^1.0.0-rc.5-ab785fc",
+    "drizzle-orm": "^1.0.0-rc.6",
     "hono": "^4.13.23",
     "pg": "^8.23.1"
   },
