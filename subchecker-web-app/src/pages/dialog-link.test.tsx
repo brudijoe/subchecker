@@ -21,6 +21,18 @@ beforeEach(() => {
 })
 
 describe("DialogLink", () => {
+    it("keeps the add-link action fixed and reachable across screen sizes", () => {
+        render(<DialogLink />)
+
+        expect(screen.getByRole("button", { name: "Add link" })).toHaveClass(
+            "fixed",
+            "inset-x-4",
+            "bottom-[calc(1rem+env(safe-area-inset-bottom))]",
+            "sm:inset-x-auto",
+            "sm:right-6",
+        )
+    })
+
     it("trims the URL, then clears and closes after success", async () => {
         const user = userEvent.setup()
         render(<DialogLink />)

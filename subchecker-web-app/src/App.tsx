@@ -6,7 +6,7 @@ import { SystemStatus } from "@/components/system-status"
 function App() {
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-8 sm:px-6 sm:py-12">
+      <main className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 pt-8 pb-24 sm:px-6 sm:pt-12">
         <header className="space-y-2">
           <div className="flex min-w-0 items-center gap-3">
             <div className="flex size-11 shrink-0 items-center justify-center rounded-xl border border-border bg-muted text-foreground">

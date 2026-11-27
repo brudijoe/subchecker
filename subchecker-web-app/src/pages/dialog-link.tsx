@@ -12,7 +12,7 @@ import {
 import { Field, FieldGroup } from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Link2 } from "lucide-react"
+import { Link2, Plus } from "lucide-react"
 import { useState, type ChangeEvent } from "react"
 import { useCreateLink } from "@/hooks/useLinks"
 
@@ -38,7 +38,8 @@ export function DialogLink() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger render={
-                <Button variant="outline">
+                <Button className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-50 shadow-lg sm:inset-x-auto sm:right-6 sm:bottom-6" size="lg">
+                    <Plus aria-hidden="true" />
                     Add link
                 </Button>} />
             <DialogContent className="sm:max-w-xl">
