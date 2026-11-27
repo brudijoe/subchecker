@@ -28,8 +28,10 @@ describe("DialogLink", () => {
             "fixed",
             "inset-x-4",
             "bottom-[calc(1rem+env(safe-area-inset-bottom))]",
-            "sm:inset-x-auto",
-            "sm:right-6",
+            "sm:bottom-6",
+            "sm:left-1/2",
+            "sm:right-auto",
+            "sm:-translate-x-1/2",
         )
     })
 

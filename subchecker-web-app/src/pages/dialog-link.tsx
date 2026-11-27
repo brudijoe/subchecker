@@ -38,7 +38,7 @@ export function DialogLink() {
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger render={
-                <Button className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-50 shadow-lg sm:inset-x-auto sm:right-6 sm:bottom-6" size="lg">
+                <Button className="fixed inset-x-4 bottom-[calc(1rem+env(safe-area-inset-bottom))] z-50 shadow-lg sm:bottom-6 sm:left-1/2 sm:right-auto sm:-translate-x-1/2" size="lg">
                     <Plus aria-hidden="true" />
                     Add link
                 </Button>} />
